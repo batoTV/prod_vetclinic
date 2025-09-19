@@ -23,7 +23,7 @@ Route::get('/owners/{owner}/pets', [OwnerController::class, 'getPetsJson'])->nam
 // Authenticated Staff Routes - NO ROLE MIDDLEWARE
 Route::middleware(['auth'])->group(function () {
     
-    Route::get('/consents/{consent}/download',[ConsentController::class, 'downloadPdf'])->name('consents.download');	
+    
     // Dashboard and Calendar - will check roles in controller
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/calendar', [AppointmentController::class, 'index'])->name('calendar');

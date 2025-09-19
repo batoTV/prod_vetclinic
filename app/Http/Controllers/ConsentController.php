@@ -53,13 +53,5 @@ public function store(Request $request, Pet $pet)
     return redirect()->route('client.success', ['action' => 'consent']);
 }
 
-public function downloadPdf(Consent $consent)
-{
-	dd(
-		'Logged-in User ID:',
-		auth()->id(),
-		'Pet Owner ID:',
-		$consent->pet->owner_id
-	);
-}
+
 }

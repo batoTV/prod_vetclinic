@@ -290,7 +290,7 @@
                 <div class="border-b pb-2 mb-2">
                     <p class="text-sm text-gray-600">Consent given on: {{ $consent->created_at->format('M d, Y \a\t h:i A') }}</p>
                     @if ($consent->file_path)
-                        <a href="{{ route('consents.download', $consent) }}" target="_blank" class="text-indigo-600 hover:underline">
+                        <a href="{{ asset('storage/' . $consent->file_path) }}" target="_blank" class="text-indigo-600 hover:underline">
                             View Signed {{ ucfirst($consent->consent_type) }} Consent PDF 
                         </a>
                     @endif
