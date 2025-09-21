@@ -25,7 +25,7 @@
                 center: 'title',
                  right: 'dayGridMonth'
             },
-            events: '/api/appointments',
+            events: '{{ url("/api/appointments") }}',
              displayEventTime: false,
             // THIS IS THE NEW FUNCTION
             eventClick: function(info) {

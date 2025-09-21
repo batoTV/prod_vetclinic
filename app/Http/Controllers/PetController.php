@@ -87,12 +87,13 @@ class PetController extends Controller
                                 ->orderBy('appointment_date', 'desc')
                                 ->get();
 
-        // Paginate the diagnoses for the medical history tab
-        $diagnoses = $pet->diagnoses()->orderBy('checkup_date', 'desc')->paginate(10);
+      
 
-        // --- ADD THIS LINE ---
-        // Paginate the consents for the consent history tab (5 per page)
-        $consents = $pet->consents()->paginate(5);
+        $diagnoses = $pet->diagnoses()->orderBy('checkup_date', 'desc')->paginate(10, ['*'], 'diag_page')
+                 ->appends(['tab' => 'medical']);
+
+        $consents = $pet->consents()->paginate(5, ['*'], 'consent_page')
+               ->appends(['tab' => 'consent']);
 
         // Return the pet profile view, passing all the necessary data
         return view('pets.show', compact(

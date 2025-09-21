@@ -45,7 +45,7 @@ class ClientRegistrationController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:owners'],
-            'phone_number' => ['required', 'string', 'max:255', 'unique:owners'],
+             'phone_number' => ['required', 'digits:11', 'unique:owners'],
             'address' => ['nullable', 'string'],
             'pets' => ['nullable', 'array'],
             'pets.*.name' => ['nullable', 'string', 'max:255'],
@@ -72,29 +72,26 @@ class ClientRegistrationController extends Controller
             ]);
 
             if ($request->has('pets')) {
-                $firstPet = null;
                 foreach ($request->pets as $petData) {
-                     if (!empty($petData['name']) && !empty($petData['species'])) {
+                    if (!empty($petData['name']) && !empty($petData['species'])) {
                         $pet = $owner->pets()->create([
                             'name' => $petData['name'],
                             'species' => $petData['species'],
                             'breed' => $petData['breed'],
                             'birth_date' => $petData['birth_date'],
                             'gender' => $petData['gender'],
-                            'allergies' => $petData['allergies'],
-                            'markings' => $petData['markings'],
+                            'allergies' => $petData['allergies'] ?? null,
+                            'markings' => $petData['markings'] ?? null,
                         ]);
 
-                        if (!$firstPet) {
-                            $firstPet = $pet;
-                            if (!empty($petData['chief_complaint'])) {
-                                Diagnosis::create([
-                                    'pet_id' => $firstPet->id,
-                                    'checkup_date' => now(),
-                                    'chief_complaints' => $petData['chief_complaint'],
-                                    'diagnosis' => $petData['chief_complaint'], 
-                                ]);
-                            }
+                        // CORRECTED LOGIC: Check for a chief complaint for THIS pet and create a diagnosis
+                        if (!empty($petData['chief_complaint'])) {
+                            Diagnosis::create([
+                                'pet_id' => $pet->id, // Use the current pet's ID
+                                'checkup_date' => now(),
+                                'chief_complaints' => $petData['chief_complaint'],
+                                'diagnosis' => $petData['chief_complaint'],
+                            ]);
                         }
                     }
                 }
@@ -134,8 +131,6 @@ class ClientRegistrationController extends Controller
         try {
             $owner = Owner::findOrFail($request->owner_id);
             if ($request->has('pets')) {
-                $firstPet = null;
-
                 foreach ($request->pets as $petData) {
                     if (!empty($petData['name']) && !empty($petData['species'])) {
                         $pet = $owner->pets()->create([
@@ -144,21 +139,18 @@ class ClientRegistrationController extends Controller
                             'breed' => $petData['breed'],
                             'birth_date' => $petData['birth_date'],
                             'gender' => $petData['gender'],
-                            'allergies' => $petData['allergies'],
-                            'markings' => $petData['markings'],
+                            'allergies' => $petData['allergies'] ?? null,
+                            'markings' => $petData['markings'] ?? null,
                         ]);
 
-
-                        if (!$firstPet) {
-                            $firstPet = $pet;
-                            if (!empty($petData['chief_complaint'])) {
-                                Diagnosis::create([
-                                    'pet_id' => $firstPet->id,
-                                    'checkup_date' => now(),
-                                    'chief_complaints' => $petData['chief_complaint'],
-                                    'diagnosis' => $petData['chief_complaint'],
-                                ]);
-                            }
+                        // CORRECTED LOGIC: Check for a chief complaint for THIS pet and create a diagnosis
+                        if (!empty($petData['chief_complaint'])) {
+                            Diagnosis::create([
+                                'pet_id' => $pet->id, // Use the current pet's ID
+                                'checkup_date' => now(),
+                                'chief_complaints' => $petData['chief_complaint'],
+                                'diagnosis' => $petData['chief_complaint'],
+                            ]);
                         }
                     }
                 }
@@ -217,4 +209,3 @@ class ClientRegistrationController extends Controller
         return view('auth.register-success');
     }
 }
-

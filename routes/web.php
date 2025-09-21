@@ -40,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
 
+    
+
     Route::get('/owners', [OwnerController::class, 'index'])->name('owners.index');
     Route::get('/owners/create', [OwnerController::class, 'create'])->name('owners.create');
     Route::post('/owners', [OwnerController::class, 'store'])->name('owners.store');

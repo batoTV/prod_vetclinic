@@ -22,10 +22,13 @@
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <div x-show="clientStatus === 'new'" x-transition>
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Your Information</h2>
-                    <div><label for="name" class="block font-medium text-sm text-gray-700">Full Name</label><input id="name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="name" :value="old('name')"></div>
-                    <div class="mt-4"><label for="email" class="block font-medium text-sm text-gray-700">Email</label><input id="email" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="email" name="email" :value="old('email')"></div>
-                    <div class="mt-4"><label for="phone_number" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="phone_number" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="phone_number" :value="old('phone_number')"></div>
-                    <div class="mt-4"><label for="address" class="block font-medium text-sm text-gray-700">Address</label><input id="address" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="address" :value="old('address')"></div>
+                    <div><label for="name" class="block font-medium text-sm text-gray-700">Full Name</label><input id="name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="name" :value="{{old('name')}}"></div>
+                    <div class="mt-4"><label for="email" class="block font-medium text-sm text-gray-700">Email</label><input id="email" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="email" name="email" :value="{{old('email')}}"></div>
+                    <div class="mt-4"><label for="phone_number" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="phone_number" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="phone_number" :value="{{ old('phone_number') }}" maxlength="11" pattern="[0-9]{11}" title="Phone number must be 11 digits."></div>
+                    @error('phone_number')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                    <div class="mt-4"><label for="address" class="block font-medium text-sm text-gray-700">Address</label><input id="address" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="address" :value="{{old('address')}}"></div>
                 </div>
                 
                 <div x-show="clientStatus === 'existing'" x-transition>
@@ -49,9 +52,9 @@
                                 <div><label :for="'pet_breed_' + index" class="block font-medium text-sm text-gray-700">Breed</label><input :id="'pet_breed_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][breed]'" x-model="pet.breed"></div>
                                 <div><label :for="'pet_birth_date_' + index" class="block font-medium text-sm text-gray-700">Birth Date</label><input :id="'pet_birth_date_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="date" :name="'pets[' + index + '][birth_date]'" x-model="pet.birth_date"></div>
                                 <div class="col-span-1 md:col-span-2"><label :for="'pet_gender_' + index" class="block font-medium text-sm text-gray-700">Gender</label><select :id="'pet_gender_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][gender]'" x-model="pet.gender"><option>Male</option><option>Female</option></select></div>
-                                <div class="col-span-1 md:col-span-2"><label :for="'pet_allergies_' + index" class="block font-medium text-sm text-gray-700">Allergies</label><textarea :id="'pet_allergies_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][allergies]'" x-model="pet.allergies"></textarea></div>
+                                <div class="col-span-1 md:col-span-2"><label :for="'pet_allergies_' + index" class="block font-medium text-sm text-gray-700">Allergies | Health Notes</label><textarea :id="'pet_allergies_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][allergies]'" x-model="pet.allergies"></textarea></div>
                                 <div class="col-span-1 md:col-span-2"><label :for="'pet_markings_' + index" class="block font-medium text-sm text-gray-700">Markings / Color</label><input :id="'pet_markings_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][markings]'" x-model="pet.markings"></div>
-                                <div class="col-span-1 md:col-span-2" x-show="index === 0"><label :for="'pet_chief_complaint_' + index" class="block font-medium text-sm text-gray-700">Chief Complaint</label><textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaint]'" x-model="pet.chief_complaint"></textarea></div>
+                                <div class="col-span-1 md:col-span-2"><label :for="'pet_chief_complaint_' + index" class="block font-medium text-sm text-gray-700">Chief Complaint</label><textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaint]'" x-model="pet.chief_complaint"></textarea></div>
                             </div>
                         </div>
                     </template>

@@ -31,7 +31,7 @@ class AppointmentController extends Controller
                 $events[] = [
                     'title' => $appointment->pet->name . ' - ' . $appointment->title,
                     'start' => $appointment->appointment_date,
-                    'url'   => '/pets/' . $appointment->pet->id, // <-- THIS IS THE NEW LINE
+                     'url'   => route('pets.show', ['pet' => $appointment->pet->id]),
                 ];
             }
         }

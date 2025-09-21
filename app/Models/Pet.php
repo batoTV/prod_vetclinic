@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Carbon\Carbon;
 
 class Pet extends Model
 {
@@ -53,4 +55,20 @@ class Pet extends Model
 {
     return $this->hasMany(Consent::class)->latest();
 }
+protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $birthDate = Carbon::parse($this->birth_date);
+                $ageInYears = $birthDate->age;
+
+                if ($ageInYears >= 1) {
+                    return $ageInYears . ' ' . \Illuminate\Support\Str::plural('year', $ageInYears) . ' old';
+                }
+                
+                $ageInMonths = (int) $birthDate->diffInMonths(now());
+                return $ageInMonths . ' ' . \Illuminate\Support\Str::plural('month', $ageInMonths) . ' old';
+            },
+        );
+    }
 }
