@@ -199,147 +199,149 @@
     
     <script>
         function clientRegisterData(ownersWithPets) {
-            return {
-                clientStatus: 'new',
-                numberOfPets: 1,
-                pets: Array.from({ length: 1 }, () => ({ name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' })),
-                findName: '',
-                findPhone: '',
-                foundOwner: null,
-                allOwnersWithPets: ownersWithPets,
-                ownerPets: [],
-                selectedPetId: null,
-                selectedConsentType: '',
-                searchMessage: '',
-                isLoading: false,
-                consentModalOpen: false,
-                hasAgreedToTerms: false,
-                consentNotes: '',
-                optionalNotes:'',
-                errors: @json($errors->toArray()),
-                findErrors: {},
-                addPet() { this.pets.push({ name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' }); this.numberOfPets = this.pets.length; },
-                removePet(index) { this.pets.splice(index, 1); this.numberOfPets = this.pets.length; },
-                updatePetCount() {
-                    const count = parseInt(this.numberOfPets);
-                    if (count < 1) { this.numberOfPets = 1; return; }
-                    const currentCount = this.pets.length;
-                    if (count > currentCount) { for (let i = currentCount; i < count; i++) this.addPet(); } 
-                    else if (count < currentCount) { this.pets.splice(count); }
-                },
-                findOwner() {
-                    this.isLoading = true;
-                    this.searchMessage = '';
-                    
-                    this.findErrors = {};
-                    if (!this.findName && !this.findPhone) {
-                        this.findErrors.general = 'Please enter either a name or a phone number to search.';
-                        this.isLoading = false;
-                        return;
+    return {
+        // --- DATA PROPERTIES (Unchanged) ---
+        clientStatus: 'new',
+        numberOfPets: 1,
+        pets: Array.from({ length: 1 }, () => ({ name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' })),
+        findName: '',
+        findPhone: '',
+        foundOwner: null,
+        allOwnersWithPets: ownersWithPets,
+        ownerPets: [],
+        selectedPetId: null,
+        selectedConsentType: '',
+        searchMessage: '',
+        isLoading: false,
+        consentModalOpen: false,
+        hasAgreedToTerms: false,
+        consentNotes: '',
+        optionalNotes:'',
+        errors: @json($errors->toArray()),
+        findErrors: {},
+        signaturePad: null,
+
+        // --- PET METHODS (Unchanged) ---
+        addPet() { this.pets.push({ name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' }); this.numberOfPets = this.pets.length; },
+        removePet(index) { this.pets.splice(index, 1); this.numberOfPets = this.pets.length; },
+        updatePetCount() {
+            const count = parseInt(this.numberOfPets);
+            if (count < 1) { this.numberOfPets = 1; return; }
+            const currentCount = this.pets.length;
+            if (count > currentCount) { for (let i = currentCount; i < count; i++) this.addPet(); } 
+            else if (count < currentCount) { this.pets.splice(count); }
+        },
+        
+        // --- OWNER/FORM METHODS (Unchanged) ---
+        findOwner() {
+            this.isLoading = true;
+            this.searchMessage = '';
+            this.findErrors = {};
+            if (!this.findName && !this.findPhone) {
+                this.findErrors.general = 'Please enter either a name or a phone number to search.';
+                this.isLoading = false;
+                return;
+            }
+            fetch('{{ route('client.find') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
+                body: JSON.stringify({ name: this.findName, phone_number: this.findPhone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.isLoading = false;
+                this.searchMessage = data.message;
+                if (data.success) {
+                    this.foundOwner = data.owner;
+                    if (this.clientStatus === 'consent') {
+                        const ownerData = this.allOwnersWithPets.find(o => o.id === this.foundOwner.id);
+                        if (ownerData) { this.ownerPets = ownerData.pets; }
                     }
-                    fetch('{{ route('client.find') }}', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content') },
-                        body: JSON.stringify({ name: this.findName, phone_number: this.findPhone })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.isLoading = false;
-                        this.searchMessage = data.message;
-                        if (data.success) {
-                            this.foundOwner = data.owner;
-                            if (this.clientStatus === 'consent') {
-                                const ownerData = this.allOwnersWithPets.find(o => o.id === this.foundOwner.id);
-                                if (ownerData) { this.ownerPets = ownerData.pets; }
-                            }
-                        } else { this.foundOwner = null; }
-                    })
-                    .catch(() => { this.searchMessage = 'An error occurred.'; this.isLoading = false; });
-                },
-                resetForm() {
-                    this.findName = '';
-                    this.findPhone = '';
-                    this.foundOwner = null;
-                    this.searchMessage = '';
-                    this.findErrors = {};
-                    this.ownerPets = [];
-                    this.selectedPetId = null;
-                    this.selectedConsentType = ''; 
-                    this.hasAgreedToTerms = false;
-                    this.consentNotes = '';
-                    this.optionalNotes = '';
-                },
-                resizeCanvas() {
-                    const canvas = document.getElementById('signature-pad');
-                    if (!canvas || !window.signaturePad) return;
-
-                    // Set the display size to match the CSS-defined size
-                    canvas.style.width = '100%';
-                    canvas.style.height = '100%';
-
-                    // Set the internal drawing buffer size to match the new display size
-                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                    canvas.width = canvas.offsetWidth * ratio;
-                    canvas.height = canvas.offsetHeight * ratio;
-
-                    // Scale the drawing context for high-DPI screens
-                    canvas.getContext('2d').scale(ratio, ratio);
-
-                    // Clear any previous content
-                    window.signaturePad.clear();
-                },
-                
-               initSignaturePad() {
-                const canvas = document.getElementById('signature-pad');
-                if (!canvas) return;
-
-                if (!this.signaturePad) {
-                    this.signaturePad = new SignaturePad(canvas, {
-                        backgroundColor: 'rgb(255, 255, 255)'
-                    });
-
-                    document.getElementById('clear-button').addEventListener('click', () => this.signaturePad.clear());
-
-                    document.getElementById('consentForm').addEventListener('submit', (event) => {
-                        if (this.signaturePad.isEmpty()) {
-                            alert("Please provide a signature.");
-                            event.preventDefault();
-                        } else {
-                            document.getElementById('signature-input').value = this.signaturePad.toDataURL('image/png');
-                        }
-                    });
-                }
-
-                // Important: resize AFTER canvas is visible
-                this.resizeCanvas();
-            },
-
-            init() {
-                    
-                    this.$watch('clientStatus', () => this.resetForm());
-
-                    // NEW watcher now also resets the form
-                    this.$watch('selectedConsentType', (value) => {
-                        // Reset the subsequent steps
-                        this.foundOwner = null;
-                        this.searchMessage = '';
-                        this.ownerPets = [];
-                        this.selectedPetId = null;
-                        this.hasAgreedToTerms = false;
-                        this.findName = '';
-                        this.findPhone = '';
-                        
-                        
-
-                       if (value) {
-                        requestAnimationFrame(() => {
-                            this.initSignaturePad();
-                        });
+                } else { this.foundOwner = null; }
+            })
+            .catch(() => { this.searchMessage = 'An error occurred.'; this.isLoading = false; });
+        },
+        resetForm() {
+            this.findName = '';
+            this.findPhone = '';
+            this.foundOwner = null;
+            this.searchMessage = '';
+            this.findErrors = {};
+            this.ownerPets = [];
+            this.selectedPetId = null;
+            this.selectedConsentType = ''; 
+            this.hasAgreedToTerms = false;
+            this.consentNotes = '';
+            this.optionalNotes = '';
+        },
+        
+        // --- SIGNATURE PAD METHODS (Unchanged) ---
+        initSignaturePad() {
+            const canvas = document.getElementById('signature-pad');
+            if (!canvas) return;
+            this.signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
+            this.resizeCanvas();
+            
+            const clearButton = document.getElementById('clear-button');
+            if (clearButton) {
+                clearButton.addEventListener('click', () => { if (this.signaturePad) this.signaturePad.clear(); });
+            }
+            
+            const consentForm = document.getElementById('consentForm');
+            if (consentForm) {
+                consentForm.addEventListener('submit', (event) => {
+                    if (this.signaturePad && this.signaturePad.isEmpty()) {
+                        alert("Please provide a signature.");
+                        event.preventDefault();
+                    } else if (this.signaturePad) {
+                        document.getElementById('signature-input').value = this.signaturePad.toDataURL('image/png');
                     }
                 });
             }
+        },
+        resizeCanvas() {
+            const canvas = document.getElementById('signature-pad');
+            if (!canvas || !this.signaturePad) return;
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            this.signaturePad.fromData(this.signaturePad.toData());
+        },
+        
+        // --- MAIN INITIALIZATION (CORRECTED) ---
+        init() {
+            this.$watch('clientStatus', (value) => {
+                // When switching main status, do a full reset
+                this.resetForm();
+            });
+
+            this.$watch('selectedConsentType', (value) => {
+                // When changing only the consent type, do a TARGETED reset
+                // Do NOT reset selectedConsentType itself
+                this.foundOwner = null;
+                this.searchMessage = '';
+                this.ownerPets = [];
+                this.selectedPetId = null;
+                this.hasAgreedToTerms = false;
+                this.findName = '';
+                this.findPhone = '';
+                
+                if (value) {this.$nextTick(() => {
+                this.initSignaturePad();
+                    });
+                }
+            });
+
+            window.addEventListener("resize", () => {
+                if (this.signaturePad) {
+                    this.resizeCanvas();
+                }
+            });
         }
     }
+}
+
     </script>
      
 @endsection
