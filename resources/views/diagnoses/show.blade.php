@@ -61,7 +61,7 @@
     {{-- X-Ray Images Section --}}
     @if ($diagnosis->images->count() > 0)
         <div class="mt-8">
-            <h3 class="text-xl font-bold mb-4 border-b pb-2">X-Ray Images</h3>
+            <h3 class="text-xl font-bold mb-4 border-b pb-2">Results and prescriptions</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 @foreach ($diagnosis->images as $image)
                     <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">

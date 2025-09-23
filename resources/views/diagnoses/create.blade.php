@@ -100,7 +100,7 @@
             
             <!-- X-Ray Image Upload -->
             <div class="md:col-span-2">
-                <label for="xray_images" class="block text-sm font-medium text-gray-700">Upload X-Ray Images</label>
+                <label for="xray_images" class="block text-sm font-medium text-gray-700">Upload results|prescriptions Images</label>
                 <input type="file" name="xray_images[]" id="xray_images" multiple class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                 @error('xray_images.*')
                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
