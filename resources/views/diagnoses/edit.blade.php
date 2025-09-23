@@ -116,14 +116,14 @@
 
      @if ($diagnosis->images->count() > 0)
         <div class="mt-8">
-            <h3 class="text-xl font-bold mb-4 border-b pb-2">Current results and prescriptions Images</h3>
+            <h3 class="text-xl font-bold mb-4 border-b pb-2">Current Results and Prescriptions</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 @foreach ($diagnosis->images as $image)
                     <div class="relative group">
                         <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">
                             <img src="{{ asset('storage/' . $image->image_path) }}" alt="X-Ray Image" class="rounded-lg shadow-md hover:opacity-75 transition-opacity">
                         </a>
-                         <button type="button" class="delete-button absolute top-2 right-2 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-url=" {{ url('/diagnosis-images/{{ $image->id) }}" title="Delete Image">
+                         <button type="button" class="delete-button absolute top-2 right-2 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-url=" {{ url('/diagnosis-images/' . $image->id) }}" title="Delete Image">
                             &times;
                         </button>
                     </div>
