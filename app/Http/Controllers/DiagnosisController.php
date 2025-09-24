@@ -57,7 +57,7 @@ class DiagnosisController extends Controller
             'diagnosis' => 'nullable|string',
             'assessment' => 'nullable|string',
             'plan' => 'nullable|string',
-            'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $diagnosis = Diagnosis::create($validatedData);
@@ -91,7 +91,7 @@ class DiagnosisController extends Controller
         // First, validate that xray_images is an array.
         'xray_images' => 'nullable|array',
         // Then, validate each item within that array.
-        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
     ]);
     
     // Update the main diagnosis fields
