@@ -39,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pets/{pet}/edit', [PetController::class, 'edit'])->name('pets.edit');
     Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
-
+    Route::delete('/consents/{consent}', [ConsentController::class, 'destroy'])->name('consents.destroy');
     
 
     Route::get('/owners', [OwnerController::class, 'index'])->name('owners.index');

@@ -109,8 +109,8 @@
             </main>
         </div>
     </div>
-     <div id="deleteModal" style="display: none;" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white text-center">
+     <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
+        <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white text-center">
             <div class="mt-3">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                     <i class="fas fa-exclamation-triangle text-red-600 fa-lg"></i>
@@ -135,6 +135,8 @@
         </div>
     </div>
 
+    
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('deleteModal');
@@ -145,17 +147,17 @@
                 button.addEventListener('click', function () {
                     const url = this.getAttribute('data-url');
                     deleteForm.setAttribute('action', url);
-                    modal.style.display = 'block';
+                    modal.classList.remove('hidden');
                 });
             });
 
             cancelBtn.addEventListener('click', function () {
-                modal.style.display = 'none';
+                modal.classList.add('hidden');
             });
             
             window.addEventListener('click', function (event) {
                 if (event.target == modal) {
-                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
                 }
             });
         });

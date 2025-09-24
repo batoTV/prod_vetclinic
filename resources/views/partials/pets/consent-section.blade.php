@@ -1,24 +1,47 @@
 <div>
     {{-- Section for displaying existing consent records --}}
     <h3 class="text-xl font-semibold mb-4">Consent History</h3>
-    <div class="space-y-4">
-        @forelse ($consents as $consent)
-            <div class="border-b pb-2 mb-2">
-                <p class="text-sm text-gray-600">Consent given on: {{ $consent->created_at->format('M d, Y \a\t h:i A') }}</p>
-                @if ($consent->file_path)
-                    <a href="{{ asset('storage/' . $consent->file_path) }}" target="_blank" class="text-indigo-600 hover:underline">
-                        View Signed {{ ucfirst($consent->consent_type) }} Consent PDF
-                    </a>
-                @endif
-                @if ($consent->notes)
-                    <p class="mt-2 text-gray-800 bg-gray-50 p-2 rounded">{{ $consent->notes }}</p>
-                @endif
-            </div>
-        @empty
-            <p class="text-gray-500">No consent records found for this pet.</p>
-        @endforelse
+    
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-4 font-semibold">Consent Date</th>
+                    <th class="p-4 font-semibold">Type</th>
+                    <th class="p-4 font-semibold">Notes</th>
+                    <th class="p-4 font-semibold text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($consents as $consent)
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4 whitespace-nowrap">{{ $consent->created_at->format('M d, Y h:i A') }}</td>
+                        <td class="p-4">{{ ucfirst($consent->consent_type) }}</td>
+                        <td class="p-4">{{ $consent->notes ?? 'N/A' }}</td>
+                        <td class="p-4 text-center whitespace-nowrap">
+                            @if ($consent->file_path)
+                                <a href="{{ asset('storage/' . $consent->file_path) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 mr-2" title="View PDF">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            @endif
+                            
+                            {{-- This button triggers your existing delete modal --}}
+                            <button type="button" class="text-red-600 hover:text-red-800 delete-consent-button" 
+                                    data-url="{{ route('consents.destroy', $consent->id) }}" title="Delete Record">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-gray-500">No consent records found for this pet.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-    <div class="mt-4">
+    
+    <div class="mt-6">
         {{ $consents->links() }}
     </div>
 

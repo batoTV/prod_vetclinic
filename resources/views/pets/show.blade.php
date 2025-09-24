@@ -182,6 +182,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tabToOpen) {
         activateTab(tabToOpen);
     }
-});
+
+
+// --- Delete Modal Logic ---
+        const modal = document.getElementById('deleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        
+        // Find all buttons with the .delete-consent-button class
+        const deleteButtons = document.querySelectorAll('.delete-consent-button');
+
+        // Add a click listener to all delete buttons
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                // Get the specific delete URL from the button that was clicked
+                const deleteUrl = this.dataset.url;
+                
+                // Set the modal's form 'action' attribute to that URL
+                deleteForm.setAttribute('action', deleteUrl);
+                
+                // Show the modal
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Add a click listener to the "Cancel" button to hide the modal
+        cancelDeleteBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            deleteForm.setAttribute('action', ''); // Clear the action
+        });
+    });
 </script>
 @endpush

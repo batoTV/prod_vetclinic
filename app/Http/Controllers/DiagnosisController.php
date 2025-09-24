@@ -73,33 +73,44 @@ class DiagnosisController extends Controller
     }
 
     public function update(Request $request, Diagnosis $diagnosis)
-    {
-         $validatedData = $request->validate([
-            'checkup_date' => 'required|date',
-            'weight' => 'nullable|numeric',
-            'temperature' => 'nullable|numeric',
-            'vet_id' => 'required|exists:users,id',
-            'attending_staff' => 'nullable|string|max:255', // <-- ADD THIS LINE
-            'chief_complaints' => 'required|string',
-            'diagnosis' => 'nullable|string',
-            'assessment' => 'nullable|string',
-            'plan' => 'nullable|string',
-            'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-        
-        // NO CHANGE NEEDED HERE. Laravel automatically handles the new field
-        // because it's in the $fillable array and validated above.
-        $diagnosis->update($validatedData);
+{
+    // VALIDATION: Added rule for the array and corrected others for consistency
+    $validatedData = $request->validate([
+        'checkup_date' => 'required|date',
+        'weight' => 'nullable|numeric',
+        'temperature' => 'nullable|numeric',
+        // This rule assumes your vets are users. If 'vets' is a separate table, change to 'exists:vets,id'
+        'vet_id' => 'required|exists:users,id',
+        'attending_staff' => 'nullable|string|max:255',
+        'chief_complaints' => 'required|string',
+        'assessment' => 'nullable|string',
+        // Made this 'required' to match the form's HTML
+        'diagnosis' => 'required|string',
+        'plan' => 'nullable|string',
+        // ** THIS IS THE KEY FIX **
+        // First, validate that xray_images is an array.
+        'xray_images' => 'nullable|array',
+        // Then, validate each item within that array.
+        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+    
+    // Update the main diagnosis fields
+    $diagnosis->update($validatedData);
 
-        if ($request->hasFile('xray_images')) {
-            foreach ($request->file('xray_images') as $file) {
-                $path = $file->store('xrays', 'public');
-                $diagnosis->images()->create(['image_path' => $path]);
-            }
+    // Handle the uploaded images
+    if ($request->hasFile('xray_images')) {
+        foreach ($request->file('xray_images') as $file) {
+            // Store the file in 'storage/app/public/diagnosis_images'
+            $path = $file->store('diagnosis_images', 'public');
+            // Create a related image record
+            $diagnosis->images()->create(['image_path' => $path]);
         }
-
-        return redirect('/pets/' . $diagnosis->pet_id)->with('success', 'Medical record has been updated successfully.');
     }
+
+    // Redirect back to the pet's page with a success message
+    return redirect()->route('pets.show', $diagnosis->pet_id)
+                     ->with('success', 'Medical record has been updated successfully.');
+}
 
     public function destroy(Diagnosis $diagnosis)
     {

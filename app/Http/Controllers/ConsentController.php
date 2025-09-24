@@ -52,6 +52,18 @@ public function store(Request $request, Pet $pet)
 
     return redirect()->route('client.success', ['action' => 'consent']);
 }
+ public function destroy(Consent $consent)
+    {
+        // Delete the associated file from storage if it exists
+        if ($consent->file_path) {
+            Storage::disk('public')->delete($consent->file_path);
+        }
 
+        // Delete the record from the database
+        $consent->delete();
+
+        // Redirect back with a success message
+        return back()->with('success', 'Consent record deleted successfully.');
+    }
 
 }
