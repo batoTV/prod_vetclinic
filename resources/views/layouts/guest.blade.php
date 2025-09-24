@@ -28,20 +28,25 @@
             </div>
         @endif
 
-        <div class="min-h-screen flex flex-col items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <x-banner-logo class="w-96 h-auto" />
-            </div>
+       <div class="min-h-screen flex flex-col items-center pt-12 bg-gray-100">
 
-            <div class="w-full sm:max-w-4xl mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{-- This will render content from your other view files --}}
-                @if (isset($slot))
-                    {{ $slot }}
-                @else
-                    @yield('content')
-                @endif
-            </div>
+    {{-- Logo Container --}}
+    <div class="mb-6">
+     
+                <x-banner-logo class="w-96 h-auto" />
         </div>
+
+        {{-- Form Card Container --}}
+        <div class="w-full sm:max-w-4xl px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            {{-- This renders your page content --}}
+            @if (isset($slot))
+                {{ $slot }}
+            @else
+                @yield('content')
+            @endif
+        </div>
+
+    </div>
         
         <div id="confirmationModal" style="display: none;" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white text-center">

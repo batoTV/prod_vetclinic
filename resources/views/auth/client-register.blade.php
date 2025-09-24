@@ -173,9 +173,9 @@
         <div class="mb-6 p-6 bg-white rounded-lg shadow-md">
             <h2 class="text-xl font-bold text-gray-800 mb-2">Client Status</h2>
             <div class="flex flex-wrap items-center gap-x-8 gap-y-4">
-                <label class="flex items-center cursor-pointer"><input type="radio" value="new" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">I am a new client</span></label>
-                <label class="flex items-center cursor-pointer"><input type="radio" value="existing" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">I am an existing client</span></label>
-                <label class="flex items-center cursor-pointer"><input type="radio" value="consent" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">Sign Consent Form</span></label>
+                <label class="flex items-center cursor-pointer mr-6"><input type="radio" value="new" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">I am a new client</span></label>
+                <label class="flex items-center cursor-pointer mr-6"><input type="radio" value="existing" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">I am an existing client</span></label>
+                <label class="flex items-center cursor-pointer mr-6"><input type="radio" value="consent" x-model="clientStatus" class="form-radio h-5 w-5 text-indigo-600"><span class="ml-2 text-gray-700">Sign Consent Form</span></label>
             </div>
         </div>
 
