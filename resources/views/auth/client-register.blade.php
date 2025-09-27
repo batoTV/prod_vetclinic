@@ -74,7 +74,7 @@
                         this.searchMessage = data.message;
                         if (data.success) {
                             this.foundOwner = data.owner;
-                            fetch(`/owners/${this.foundOwner.id}/pets`)
+                           fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
                                 .then(res => res.json())
                                 .then(petData => { this.ownerPets = petData; });
                         } else { 
@@ -497,7 +497,7 @@
                         if (data.success) {
                             this.foundOwner = data.owner;
                             // Fetch pets for this owner
-                            fetch(`/owners/${this.foundOwner.id}/pets`)
+                           fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
                                 .then(res => res.json())
                                 .then(petData => { this.ownerPets = petData; });
                         } else { 

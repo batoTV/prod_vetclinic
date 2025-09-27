@@ -3,7 +3,7 @@
 @section('title', 'Appointments Calendar')
 
 @section('header-actions')
-    <a href="/appointments/create" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition-colors duration-300 flex items-center">
+    <a href="{{ url('/appointments/create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition-colors duration-300 flex items-center">
         <i class="fas fa-plus mr-2"></i> Add New Appointment
     </a>
 @endsection
