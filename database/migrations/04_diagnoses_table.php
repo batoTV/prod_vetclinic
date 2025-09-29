@@ -15,9 +15,9 @@
                 $table->decimal('weight', 5, 2)->nullable();
                 $table->decimal('temperature', 4, 1)->nullable();
                 $table->string('attending_vet')->nullable();
-                $table->text('chief_complaints')->nullable();
+                $table->text('chief_complaints');
                 $table->text('assessment')->nullable();
-                $table->text('diagnosis')->nullable(); 
+                 $table->text('diagnosis'); 
                 $table->text('plan')->nullable();
                 $table->timestamps();
             });
