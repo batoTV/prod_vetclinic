@@ -6,7 +6,7 @@
 <div class="bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-6">Edit Medical Record</h2>
 
-    <form action="{{ url('/diagnoses/' . $diagnosis->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ url('/diagnoses/' . $diagnosis->id) }}" method="POST" enctype="multipart/form-data" >
         @csrf
         @method('PUT')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -36,14 +36,18 @@
             <!-- Attending Vet -->
         <div>
             <label for="vet_id" class="block text-sm font-medium text-gray-700">Attending Vet</label>
-            <select name="vet_id" id="vet_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <select name="vet_id" id="vet_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">Select a Veterinarian</option>
                 @foreach ($vets as $vet)
                     <option value="{{ $vet->id }}" @selected(old('vet_id', $diagnosis->vet_id) == $vet->id)>
                         {{ $vet->name }}
                     </option>
                 @endforeach
+                
             </select>
+            @error('vet_id')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
          <div>
