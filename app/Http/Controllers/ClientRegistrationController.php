@@ -55,7 +55,7 @@ class ClientRegistrationController extends Controller
             'pets.*.gender' => ['nullable', 'in:Male,Female'],
             'pets.*.allergies' => ['nullable', 'string'],
             'pets.*.markings' => ['nullable', 'string', 'max:255'],
-            'pets.*.chief_complaint' => ['nullable', 'string'],
+            'pets.*.chief_complaints' => ['nullable', 'string'],
         ]);
 
         if ($validator->fails()) {
@@ -85,11 +85,11 @@ class ClientRegistrationController extends Controller
                         ]);
 
                         // CORRECTED LOGIC: Check for a chief complaint for THIS pet and create a diagnosis
-                        if (!empty($petData['chief_complaint'])) {
+                        if (!empty($petData['chief_complaints'])) {
                             Diagnosis::create([
                                 'pet_id' => $pet->id, // Use the current pet's ID
                                 'checkup_date' => now(),
-                                'chief_complaints' => $petData['chief_complaint'],
+                                'chief_complaints' => $petData['chief_complaints'],
                             ]);
                         }
                     }
@@ -119,7 +119,7 @@ class ClientRegistrationController extends Controller
             'pets.*.gender' => ['nullable', 'in:Male,Female'],
             'pets.*.allergies' => ['nullable', 'string'],
             'pets.*.markings' => ['nullable', 'string', 'max:255'],
-            'pets.*.chief_complaint' => ['nullable', 'string'],
+            'pets.*.chief_complaints' => ['nullable', 'string'],
         ]);
 
         if ($validator->fails()) {
@@ -143,11 +143,11 @@ class ClientRegistrationController extends Controller
                         ]);
 
                         // CORRECTED LOGIC: Check for a chief complaint for THIS pet and create a diagnosis
-                        if (!empty($petData['chief_complaint'])) {
+                        if (!empty($petData['chief_complaints'])) {
                             Diagnosis::create([
                                 'pet_id' => $pet->id, // Use the current pet's ID
                                 'checkup_date' => now(),
-                                'chief_complaints' => $petData['chief_complaint'],
+                                'chief_complaints' => $petData['chief_complaints'],
                             ]);
                         }
                     }

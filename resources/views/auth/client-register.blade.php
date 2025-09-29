@@ -239,11 +239,18 @@
                 </div>
 
                 <div>
-                    <label :for="'pet_species_' + index" class="block font-medium text-sm text-gray-700">Species</label>
-                    <input :id="'pet_species_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][species]'" x-model="pet.species" required>
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.species']" x-text="errors['pets.' + index + '.species']" class="text-red-600 text-sm mt-1"></div>
-                </div>
+                <label :for="'pet_species_' + index" class="block font-medium text-sm text-gray-700">Species</label>
+                
+                {{-- The <input> is replaced with a <select> dropdown --}}
+                <select :id="'pet_species_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][species]'" x-model="pet.species">
+                    <option value="">Select a Species</option>
+                    <option value="Feline">Feline</option>
+                    <option value="Canine">Canine</option>
+                </select>
+                
+                {{-- Error Message --}}
+                <div x-show="errors['pets.' + index + '.species']" x-text="errors['pets.' + index + '.species']" class="text-red-600 text-sm mt-1"></div>
+            </div>
 
                 <div>
                     <label :for="'pet_breed_' + index" class="block font-medium text-sm text-gray-700">Breed</label>
@@ -254,7 +261,7 @@
 
                 <div>
                     <label :for="'pet_birth_date_' + index" class="block font-medium text-sm text-gray-700">Birth Date</label>
-                    <input :id="'pet_birth_date_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="date" :name="'pets[' + index + '][birth_date]'" x-model="pet.birth_date" required>
+                    <input :id="'pet_birth_date_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="date" :name="'pets[' + index + '][birth_date]'" x-model="pet.birth_date">
                     {{-- Error Message --}}
                     <div x-show="errors['pets.' + index + '.birth_date']" x-text="errors['pets.' + index + '.birth_date']" class="text-red-600 text-sm mt-1"></div>
                 </div>

@@ -31,9 +31,21 @@
 
             <!-- Species -->
             <div>
-                <label for="species" class="block text-sm font-medium text-gray-700">Species</label>
-                <input type="text" name="species" id="species" required value="{{ old('species', $pet->species) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
+    <label for="species" class="block text-sm font-medium text-gray-700">Species</label>
+    
+    <select name="species" id="species" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+        <option value="">Select a Species</option>
+        
+        <option value="Feline" {{ old('species', $pet->species) == 'Feline' ? 'selected' : '' }}>
+            Feline
+        </option>
+        
+        <option value="Canine" {{ old('species', $pet->species) == 'Canine' ? 'selected' : '' }}>
+            Canine
+        </option>
+    </select>
+    
+</div>
 
             <!-- Breed -->
             <div>
