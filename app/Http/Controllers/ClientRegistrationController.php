@@ -90,7 +90,6 @@ class ClientRegistrationController extends Controller
                                 'pet_id' => $pet->id, // Use the current pet's ID
                                 'checkup_date' => now(),
                                 'chief_complaints' => $petData['chief_complaint'],
-                                'diagnosis' => $petData['chief_complaint'],
                             ]);
                         }
                     }
@@ -149,7 +148,6 @@ class ClientRegistrationController extends Controller
                                 'pet_id' => $pet->id, // Use the current pet's ID
                                 'checkup_date' => now(),
                                 'chief_complaints' => $petData['chief_complaint'],
-                                'diagnosis' => $petData['chief_complaint'],
                             ]);
                         }
                     }

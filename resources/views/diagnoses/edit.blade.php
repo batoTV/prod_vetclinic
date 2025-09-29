@@ -75,7 +75,7 @@
             <!-- Diagnosis -->
             <div class="md:col-span-2">
                 <label for="diagnosis" class="block text-sm font-medium text-gray-700">Diagnosis</label>
-                <textarea name="diagnosis" id="diagnosis" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->diagnosis }}</textarea>
+                <textarea name="diagnosis" id="diagnosis" rows="4"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->diagnosis }}</textarea>
             </div>
 
             <!-- Plan -->

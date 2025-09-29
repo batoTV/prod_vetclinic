@@ -214,5 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             deleteForm.setAttribute('action', ''); // Clear the action
         });
     });
+
+    
 </script>
 @endpush

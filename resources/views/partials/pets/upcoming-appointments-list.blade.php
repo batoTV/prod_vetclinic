@@ -1,31 +1,46 @@
-<div class="flow-root">
-    <ul role="list" class="-mb-8">
-        @forelse ($upcomingAppointments as $appointment)
-        <li>
-            <div class="relative pb-8">
-                @if (!$loop->last)
-                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                @endif
-                <div class="relative flex space-x-3">
-                    <div>
-                        <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
-                            <i class="fas fa-calendar-check text-white"></i>
-                        </span>
-                    </div>
-                    <div class="min-w-0 flex-1 pt-1.5">
-                        <div>
-                            <p class="text-sm text-gray-500">Appointment on <time>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</time></p>
-                            <p class="font-medium text-gray-900">{{ $appointment->title }}</p>
-                            <p class="mt-2 text-sm text-gray-700">{{ $appointment->description }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
-        @empty
-        <li>
-            <p class="text-gray-500">No upcoming appointments found for this pet.</p>
-        </li>
-        @endforelse
-    </ul>
+<div class="overflow-x-auto">
+    <table class="w-full text-left">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-4 font-semibold">Appointment Date</th>
+                <th class="p-4 font-semibold">Title</th>
+                <th class="p-4 font-semibold">Description</th>
+                <th class="p-4 font-semibold text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($upcomingAppointments as $appointment)
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-4">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</td>
+                    <td class="p-4">{{ $appointment->title }}</td>
+                    <td class="p-4">{{ $appointment->description ?: 'N/A' }}</td>
+                    <td class="p-4 text-center">
+    <div class="flex justify-center items-center space-x-4">
+        {{-- Edit Link --}}
+        <a href="{{ route('appointments.edit', $appointment->id) }}" class="text-green-600 hover:text-green-800 mr-2">
+            <i class="fas fa-pen"></i>
+        </a>
+        
+        {{-- Delete Button using the generic class --}}
+        <button type="button" class="text-red-600 hover:text-red-800 delete-button" 
+                data-url="{{ route('appointments.destroy', $appointment->id) }}" 
+                title="Cancel Appointment">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-gray-500">No upcoming appointments scheduled.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
+
+@if($upcomingAppointments->hasPages())
+    <div class="mt-6">
+        {{ $upcomingAppointments->links() }}
+    </div>
+@endif

@@ -69,24 +69,55 @@ class AppointmentController extends Controller
         $pets = Pet::with('owner')->get();
         
         // Get the specific pet ID from the URL, if it exists
-        $selectedPetId = $request->input('pet_id');
+        $selectedPetId = $request->input('pet');
 
         return view('appointments.create', [
             'pets' => $pets,
             'selectedPetId' => $selectedPetId
         ]);
     }
-    //  /**
-    //  * Update the status of an appointment.
-    //  */
-    // public function updateStatus(Request $request, Appointment $appointment)
-    // {
-    //     $request->validate([
-    //         'status' => 'required|in:Scheduled,Completed,Cancelled,No-Show',
-    //     ]);
+    public function edit(Appointment $appointment)
+    {
+        // We need the list of all pets for the dropdown, just like in create()
+        $pets = Pet::with('owner')->get();
 
-    //     $appointment->update(['status' => $request->status]);
+        return view('appointments.edit', [
+            'appointment' => $appointment,
+            'pets' => $pets
+        ]);
+    }
 
-    //     return redirect()->back()->with('success', 'Appointment status updated.');
-    // }
+    /**
+     * Update the specified appointment in storage.
+     */
+    public function update(Request $request, Appointment $appointment)
+    {
+        // Validate the incoming data
+        $validatedData = $request->validate([
+            'pet_id' => 'required|exists:pets,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'appointment_date' => 'required|date',
+        ]);
+
+        // Update the appointment with the validated data
+        $appointment->update($validatedData);
+
+        // Redirect back to the pet's profile page, on the upcoming appointments tab
+        return redirect()->route('pets.show', ['pet' => $appointment->pet_id, 'tab' => 'upcoming'])
+                         ->with('success', 'Appointment updated successfully.');
+    }
+
+    /**
+     * Remove the specified appointment from storage.
+     */
+    public function destroy(Appointment $appointment)
+    {
+        $petId = $appointment->pet_id; // Store pet_id before deleting
+        $appointment->delete();
+
+        // Redirect back to the pet's profile page
+        return redirect()->route('pets.show', ['pet' => $petId, 'tab' => 'upcoming'])
+                         ->with('success', 'Appointment cancelled successfully.');
+    }
 }

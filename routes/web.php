@@ -30,6 +30,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/appointments', [AppointmentController::class, 'getEvents']);
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+     Route::get('/appointments/{appointment}/edit', [AppointmentController::class, 'edit'])->name('appointments.edit');
+    Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 
     // Routes accessible by ALL staff
     Route::get('/pets', [PetController::class, 'index'])->name('pets.index');

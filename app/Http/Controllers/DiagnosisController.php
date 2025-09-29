@@ -44,33 +44,40 @@ class DiagnosisController extends Controller
         ]);
     }
 
-    public function store(Request $request, Pet $pet)
-    {
-        $validatedData = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
-            'checkup_date' => 'required|date',
-            'weight' => 'nullable|numeric',
-            'temperature' => 'nullable|numeric',
-            'vet_id' => 'required|exists:users,id',
-            'attending_staff' => 'nullable|string|max:255', // <-- ADD THIS LINE
-            'chief_complaints' => 'required|string',
-            'diagnosis' => 'nullable|string',
-            'assessment' => 'nullable|string',
-            'plan' => 'nullable|string',
-            'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-        ]);
+   public function store(Request $request, Pet $pet)
+{
+    // 1. Validation rules are updated.
+    $validatedData = $request->validate([
+        'checkup_date' => 'required|date',
+        'weight' => 'nullable|numeric',
+        'temperature' => 'nullable|numeric',
+        // 'vet_id' is now nullable to allow creating a record from client registration
+        'vet_id' => 'nullable|exists:users,id', 
+        'attending_staff' => 'nullable|string|max:255',
+        // 'chief_complaint' is now nullable (was required) and singular
+        'chief_complaints' => 'nullable|string',
+        'diagnosis' => 'nullable|string',
+        'assessment' => 'nullable|string',
+        'plan' => 'nullable|string',
+        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+    ]);
 
-        $diagnosis = Diagnosis::create($validatedData);
+    // 2. Create the diagnosis using the relationship.
+    // This automatically adds the correct pet_id.
+    $diagnosis = $pet->diagnoses()->create($validatedData);
 
-        if ($request->hasFile('xray_images')) {
-            foreach ($request->file('xray_images') as $file) {
-                $path = $file->store('xrays', 'public');
-                $diagnosis->images()->create(['image_path' => $path]);
-            }
+    // Image handling logic remains the same
+    if ($request->hasFile('xray_images')) {
+        foreach ($request->file('xray_images') as $file) {
+            $path = $file->store('xrays', 'public');
+            $diagnosis->images()->create(['image_path' => $path]);
         }
-
-        return redirect('/pets/' . $pet->id)->with('success', 'Medical record has been added successfully.');
     }
+
+    // 3. (Best Practice) Redirect using the named route.
+    return redirect()->route('pets.show', $pet->id)
+                     ->with('success', 'Medical record has been added successfully.');
+}
 
     public function update(Request $request, Diagnosis $diagnosis)
 {
@@ -80,12 +87,12 @@ class DiagnosisController extends Controller
         'weight' => 'nullable|numeric',
         'temperature' => 'nullable|numeric',
         // This rule assumes your vets are users. If 'vets' is a separate table, change to 'exists:vets,id'
-        'vet_id' => 'required|exists:users,id',
+        'vet_id' => 'nullable|exists:users,id',
         'attending_staff' => 'nullable|string|max:255',
-        'chief_complaints' => 'required|string',
+        'chief_complaints' => 'nullable|string',
         'assessment' => 'nullable|string',
         // Made this 'required' to match the form's HTML
-        'diagnosis' => 'required|string',
+        'diagnosis' => 'nullable|string',
         'plan' => 'nullable|string',
         // ** THIS IS THE KEY FIX **
         // First, validate that xray_images is an array.

@@ -80,12 +80,12 @@ class PetController extends Controller
         $upcomingAppointments = $pet->appointments()
                                     ->whereDate('appointment_date', '>=', \Carbon\Carbon::today())
                                     ->orderBy('appointment_date', 'asc')
-                                    ->get();
+                                    ->paginate(10);
 
         $pastAppointments = $pet->appointments()
                                 ->whereDate('appointment_date', '<', \Carbon\Carbon::today())
                                 ->orderBy('appointment_date', 'desc')
-                                ->get();
+                                ->paginate(10);
 
       
 
