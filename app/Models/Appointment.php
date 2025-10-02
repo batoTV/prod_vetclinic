@@ -20,4 +20,11 @@ class Appointment extends Model
     {
         return $this->belongsTo(Pet::class);
     }
+      public function diagnosis()
+{
+    return $this->belongsTo(Diagnosis::class);
+}
+ protected $casts = [
+        'appointment_date' => 'datetime', // This is the line to add
+    ];
 }

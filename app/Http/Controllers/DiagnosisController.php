@@ -29,6 +29,7 @@ class DiagnosisController extends Controller
      */
     public function show(Diagnosis $diagnosis)
     {
+        $diagnosis->load('appointments'); 
         return view('diagnoses.show', ['diagnosis' => $diagnosis]);
     }
 
@@ -38,6 +39,7 @@ class DiagnosisController extends Controller
     public function edit(Diagnosis $diagnosis)
     {
         $vets = User::where('role', 'vet')->get();
+        $diagnosis->load('appointments'); 
         return view('diagnoses.edit', [
             'diagnosis' => $diagnosis,
             'vets' => $vets
@@ -60,11 +62,23 @@ class DiagnosisController extends Controller
         'assessment' => 'nullable|string',
         'plan' => 'nullable|string',
         'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+        'appointments' => 'nullable|array', // Validate the main array
+        'appointments.*.appointment_date' => 'nullable|date', // Changed from required_with
+        'appointments.*.title' => 'nullable|string|max:255',
     ]);
 
     // 2. Create the diagnosis using the relationship.
     // This automatically adds the correct pet_id.
     $diagnosis = $pet->diagnoses()->create($validatedData);
+
+     if ($request->has('appointments')) {
+        foreach ($validatedData['appointments'] as $appointmentData) {
+            // Add the pet_id to each appointment before creating
+            $appointmentData['pet_id'] = $pet->id; 
+            
+            $diagnosis->appointments()->create($appointmentData);
+        }
+    }
 
     // Image handling logic remains the same
     if ($request->hasFile('xray_images')) {
@@ -94,6 +108,9 @@ class DiagnosisController extends Controller
         // Made this 'required' to match the form's HTML
         'diagnosis' => 'nullable|string',
         'plan' => 'nullable|string',
+        'appointments' => 'nullable|array',
+        'appointments.*.appointment_date' => 'nullable|date', // Changed from required_with
+        'appointments.*.title' => 'nullable|string|max:255',
         // ** THIS IS THE KEY FIX **
         // First, validate that xray_images is an array.
         'xray_images' => 'nullable|array',
@@ -104,6 +121,21 @@ class DiagnosisController extends Controller
     // Update the main diagnosis fields
     $diagnosis->update($validatedData);
 
+    $appointmentsData = isset($validatedData['appointments']) ? 
+        array_filter($validatedData['appointments'], function($item) {
+            return !empty($item['appointment_date']) && !empty($item['title']);
+        }) : [];
+
+    // First, delete all old appointments linked to this diagnosis
+    $diagnosis->appointments()->delete();
+
+    // Then, create the new, filtered appointments
+    if (!empty($appointmentsData)) {
+        foreach ($appointmentsData as $appointmentData) {
+            $appointmentData['pet_id'] = $diagnosis->pet_id;
+            $diagnosis->appointments()->create($appointmentData);
+        }
+    }
     // Handle the uploaded images
     if ($request->hasFile('xray_images')) {
         foreach ($request->file('xray_images') as $file) {
@@ -115,7 +147,7 @@ class DiagnosisController extends Controller
     }
 
     // Redirect back to the pet's page with a success message
-    return redirect()->route('pets.show', $diagnosis->pet_id)
+    return redirect()->route('diagnoses.show', $diagnosis)
                      ->with('success', 'Medical record has been updated successfully.');
 }
 
@@ -126,7 +158,8 @@ class DiagnosisController extends Controller
         }
         $petId = $diagnosis->pet_id;
         $diagnosis->delete();
-        return redirect('/pets/' . $petId)->with('success', 'Medical record deleted.');
+        return redirect()->route('pets.show', ['pet' => $petId])
+                 ->with('success', 'Medical record deleted.');
     }
     
     public function destroyImage(DiagnosisImage $image)

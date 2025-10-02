@@ -144,6 +144,6 @@ class PetController extends Controller
     {
         $pet->delete();
 
-        return redirect('/pets');
+        return redirect()->route('pets.index')->with('success', 'Pet record deleted successfully.');
     }
 }

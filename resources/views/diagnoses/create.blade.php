@@ -75,10 +75,10 @@
         </div>
 
         <!-- Assessment -->
-        <div class="md:col-span-2">
+        <!-- <div class="md:col-span-2">
             <label for="assessment" class="block text-sm font-medium text-gray-700">Assessment</label>
             <textarea name="assessment" id="assessment" rows="3" class="mt-1 block w-full ..."></textarea>
-        </div>
+        </div> -->
 
             <!-- Diagnosis -->
             <div class="md:col-span-2">
@@ -97,7 +97,43 @@
                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                 @enderror
             </div>
-            
+            <div class="col-span-1 md:col-span-2 pt-6 border-t mt-6" 
+     x-data="{ appointments: [{ date: '', title: '' }] }">
+    
+    <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-medium text-gray-900">Schedule Appointments (Optional)</h3>
+        {{-- Button color changed from indigo to gray --}}
+        <button type="button" @click="appointments.push({ date: '', title: '' })" class="text-sm bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">
+            + Add Another
+        </button>
+    </div>
+
+    {{-- This wrapper div adds the border --}}
+    <div class="border p-4 rounded-md">
+        <template x-for="(appointment, index) in appointments" :key="index">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center" :class="{ 'mt-4 pt-4 border-t': index > 0 }">
+                {{-- Date Input --}}
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700">Appointment Date</label>
+                    <input type="date" :name="`appointments[${index}][appointment_date]`" x-model="appointment.date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm ...">
+                </div>
+
+                {{-- Title Input --}}
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700">Appointment Title</label>
+                    <input type="text" :name="`appointments[${index}][title]`" x-model="appointment.title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm ..." placeholder="e.g., Vaccine Shot 1">
+                </div>
+
+                {{-- Remove Button --}}
+                <div class="md:col-span-1 text-right mt-6">
+                    <button type="button" @click="appointments.splice(index, 1)" x-show="appointments.length > 0" class="text-red-500 hover:text-red-700">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
             <!-- X-Ray Image Upload -->
             <div class="md:col-span-2">
                 <label for="xray_images" class="block text-sm font-medium text-gray-700">Upload Results|Prescriptions</label>

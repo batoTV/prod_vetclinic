@@ -163,6 +163,14 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+    <script>
+    // Reloads the page every 2 hours (7,200,000 ms) to keep the session alive
+    // This is 120 minutes * 60 seconds * 1000 milliseconds = 7,200,000 ms
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 7200000); 
+</script>
     
 </body>
 @stack('scripts') 

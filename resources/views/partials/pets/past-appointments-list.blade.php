@@ -13,11 +13,19 @@
                         </span>
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5">
-                        <div>
-                            <p class="text-sm text-gray-500">Appointment on <time>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</time></p>
-                            <p class="font-medium text-gray-900">{{ $appointment->title }}</p>
-                            <p class="mt-2 text-sm text-gray-700">{{ $appointment->description }}</p>
+                        <div class="text-sm text-gray-500">
+                            Appointment on <time>{{ $appointment->appointment_date->format('M d, Y') }}</time>
                         </div>
+                        <p class="font-medium text-gray-900">{{ $appointment->title }}</p>
+                        
+                        {{-- ADD THIS BLOCK --}}
+                        @if ($appointment->diagnosis)
+                            <div class="mt-2 text-sm">
+                                <a href="{{ route('diagnoses.show', $appointment->diagnosis) }}" class="text-indigo-600 hover:underline">
+                                    View Associated Medical Record &rarr;
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

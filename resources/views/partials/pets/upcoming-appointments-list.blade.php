@@ -4,7 +4,7 @@
             <tr>
                 <th class="p-4 font-semibold">Appointment Date</th>
                 <th class="p-4 font-semibold">Title</th>
-                <th class="p-4 font-semibold">Description</th>
+                <th class="p-4 font-semibold">Linked Medical Record</th> {{-- New Column --}}
                 <th class="p-4 font-semibold text-center">Actions</th>
             </tr>
         </thead>
@@ -13,10 +13,19 @@
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-4">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</td>
                     <td class="p-4">{{ $appointment->title }}</td>
-                    <td class="p-4">{{ $appointment->description ?: 'N/A' }}</td>
+                    <td class="p-4">
+                        {{-- New Cell: Check if a diagnosis is linked --}}
+                        @if ($appointment->diagnosis)
+                            <a href="{{ route('diagnoses.show', $appointment->diagnosis) }}" class="text-indigo-600 hover:underline">
+                                Medical Record from {{ $appointment->diagnosis->checkup_date->format('M d, Y') }}
+                            </a>
+                        @else
+                            <span class="text-gray-400">N/A</span>
+                        @endif
+                    </td>
                     <td class="p-4 text-center">
-    <div class="flex justify-center items-center space-x-4">
-        {{-- Edit Link --}}
+                        <div class="flex justify-center items-center space-x-4">
+                             {{-- Edit Link --}}
         <a href="{{ route('appointments.edit', $appointment->id) }}" class="text-green-600 hover:text-green-800 mr-2">
             <i class="fas fa-pen"></i>
         </a>
@@ -27,8 +36,8 @@
                 title="Cancel Appointment">
             <i class="fas fa-trash"></i>
         </button>
-    </div>
-</td>
+                        </div>
+                    </td>
                 </tr>
             @empty
                 <tr>

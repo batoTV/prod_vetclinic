@@ -31,6 +31,7 @@
             <h3 class="text-xl font-bold mb-4 border-b pb-2">Pet Details</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                 <p><span class="font-semibold">Species:</span> {{ $pet->species }}</p>
+                <p><span class="font-semibold">Breed:</span> {{ $pet->breed ?: 'N/A' }}</p>
                 <p><span class="font-semibold">Gender:</span> {{ $pet->gender }}</p>
                 <p><span class="font-semibold">Markings/Color:</span> {{ $pet->markings ?: 'N/A' }}</p>
                 <p><span class="font-semibold">Birth Date:</span> {{ \Carbon\Carbon::parse($pet->birth_date)->format('M d, Y') }}</p>

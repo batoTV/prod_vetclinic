@@ -46,4 +46,12 @@ class Diagnosis extends Model
     {
         return $this->belongsTo(User::class, 'vet_id');
     }
+    public function appointments() // Note the plural name
+{
+    return $this->hasMany(Appointment::class)->orderBy('appointment_date');
+}
+protected $casts = [
+        'checkup_date' => 'datetime', // This is the line to add
+    ];
+    
 }

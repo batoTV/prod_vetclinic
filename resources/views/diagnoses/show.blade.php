@@ -10,9 +10,14 @@
             <h2 class="text-2xl font-bold">Medical Record for {{ $diagnosis->pet->name }}</h2>
             <p class="text-sm text-gray-500">Check-up on: {{ \Carbon\Carbon::parse($diagnosis->checkup_date)->format('M d, Y') }}</p>
         </div>
-        <a href="{{ url('/pets/' . $diagnosis->pet_id) }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center">
+        <div class="flex items-center space-x-7">
+          <a href="{{ route('diagnoses.edit', $diagnosis) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+            Edit Record
+        </a>
+        <a href="{{ url('/pets/' . $diagnosis->pet_id) }}" class="bg-gray-200 ml-4 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center">
             <i class="fas fa-arrow-left mr-2"></i> Back to Pet Profile
         </a>
+        </div>
     </div>
 
     {{-- Main Content Grid --}}
@@ -23,10 +28,10 @@
                 <p class="font-semibold text-gray-600">Chief Complaints:</p>
                 <p class="mt-1">{{ $diagnosis->chief_complaints }}</p>
             </div>
-            <div class="p-4 bg-gray-50 rounded-lg">
+            <!-- <div class="p-4 bg-gray-50 rounded-lg">
                 <p class="font-semibold text-gray-600">Assessment:</p>
                 <p class="mt-1">{{ $diagnosis->assessment ?: 'N/A' }}</p>
-            </div>
+            </div> -->
             <div class="p-4 bg-gray-50 rounded-lg">
                 <p class="font-semibold text-gray-600">Diagnosis:</p>
                 <p class="mt-1">{{ $diagnosis->diagnosis }}</p>
@@ -57,6 +62,34 @@
             </div>
         </div>
     </div>
+
+    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold mb-4 border-b pb-2">Appointments Scheduled</h3>
+    
+    {{-- This wrapper div makes the table scrollable --}}
+    <div class="max-h-96 overflow-y-auto border rounded-lg">
+        <table class="w-full text-left">
+            <thead class="bg-gray-100 sticky top-0">
+                <tr>
+                    <th class="p-4 font-semibold">Appointment Date</th>
+                    <th class="p-4 font-semibold">Title</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @forelse ($diagnosis->appointments as $appointment)
+                    <tr>
+                        <td class="p-4">{{ $appointment->appointment_date->format('M d, Y') }}</td>
+                        <td class="p-4">{{ $appointment->title }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="2" class="p-4 text-center text-gray-500">No appointments are linked to this medical record.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
     {{-- X-Ray Images Section --}}
     @if ($diagnosis->images->count() > 0)
