@@ -29,10 +29,16 @@
             </div>
 
             <!-- Species -->
-            <div>
-                <label for="species" class="block text-sm font-medium text-gray-700">Species</label>
-                <input type="text" name="species" id="species" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
+         <div>
+            <label for="species" class="block text-sm font-medium text-gray-700">Species</label>
+            
+            {{-- The text input is now a dropdown menu --}}
+            <select name="species" id="species" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select a Species</option>
+                <option value="Feline">Feline</option>
+                <option value="Canine">Canine</option>
+            </select>
+        </div>
 
             <!-- Breed -->
             <div>

@@ -73,6 +73,7 @@ class ClientRegistrationController extends Controller
 
             if ($request->has('pets')) {
                 foreach ($request->pets as $petData) {
+                    
                     if (!empty($petData['name']) && !empty($petData['species'])) {
                         $pet = $owner->pets()->create([
                             'name' => $petData['name'],
@@ -86,12 +87,12 @@ class ClientRegistrationController extends Controller
 
                         // CORRECTED LOGIC: Check for a chief complaint for THIS pet and create a diagnosis
                         if (!empty($petData['chief_complaints'])) {
-                            Diagnosis::create([
-                                'pet_id' => $pet->id, // Use the current pet's ID
-                                'checkup_date' => now(),
-                                'chief_complaints' => $petData['chief_complaints'],
-                            ]);
-                        }
+                        // **SUGGESTION**: Create diagnosis using the relationship
+                        $pet->diagnoses()->create([
+                            'checkup_date' => now(),
+                            'chief_complaints' => $petData['chief_complaints'],
+                        ]);
+                    }
                     }
                 }
             }

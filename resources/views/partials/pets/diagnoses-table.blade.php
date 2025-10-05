@@ -4,14 +4,16 @@
             <tr>
                 <th class="p-4 font-semibold">Check-up Date</th>
                 <th class="p-4 font-semibold">Diagnosis</th>
+                <th class="p-4 font-semibold">Chief Complaint</th> {{-- 1. New Column Added --}}
                 <th class="p-4 font-semibold text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($diagnoses as $diagnosis)
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="p-4">{{ \Carbon\Carbon::parse($diagnosis->checkup_date)->format('M d, Y') }}</td>
-                    <td class="p-4">{{ $diagnosis->diagnosis }}</td>
+                    <td class="p-4">{{ $diagnosis->checkup_date->format('M d, Y') }}</td>
+                    <td class="p-4">{{ $diagnosis->diagnosis ?: 'Awaiting Diagnosis' }}</td>
+                    <td class="p-4">{{ $diagnosis->chief_complaints ?: 'N/A' }}</td> {{-- 2. New Cell Added --}}
                     <td class="p-4 text-center">
                         <a href="{{ route('diagnoses.show', $diagnosis->id) }}" class="text-indigo-600 hover:text-indigo-800 mr-2" title="View Details">
                             <i class="fas fa-eye"></i>
@@ -26,12 +28,16 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3" class="p-4 text-center text-gray-500">No medical history found.</td>
+                    {{-- 3. Colspan Updated --}}
+                    <td colspan="4" class="p-4 text-center text-gray-500">No medical history found.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 </div>
-<div class="mt-6">
-    {{ $diagnoses->links() }}
-</div>
+
+@if($diagnoses->hasPages())
+    <div class="mt-6">
+        {{ $diagnoses->links() }}
+    </div>
+@endif

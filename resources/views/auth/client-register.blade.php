@@ -13,7 +13,7 @@
                 clientStatus: @json(old('client_status', 'new')),
                 errors: errors || {},
                 numberOfPets: (oldPets && oldPets.length > 0) ? oldPets.length : 1,
-                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' } ],
+                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' } ],
                 findName: '',
                 findPhone: '',
                 foundOwner: null,
@@ -32,7 +32,7 @@
 
                 // --- METHODS ---
                 createEmptyPet() {
-                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' };
+                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' };
                 },
                 addPet() { 
                     this.pets.push(this.createEmptyPet()); 
@@ -292,9 +292,9 @@
 
                 <div class="col-span-1 md:col-span-2">
                     <label :for="'pet_chief_complaint_' + index" class="block font-medium text-sm text-gray-700">Reason for Visit (Chief Complaint)</label>
-                    <textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaint]'" x-model="pet.chief_complaint"></textarea>
+                    <textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaints]'" x-model="pet.chief_complaints"></textarea>
                      {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.chief_complaint']" x-text="errors['pets.' + index + '.chief_complaint']" class="text-red-600 text-sm mt-1"></div>
+                    <div x-show="errors['pets.' + index + '.chief_complaints']" x-text="errors['pets.' + index + '.chief_complaints']" class="text-red-600 text-sm mt-1"></div>
                 </div>
 
             </div>
@@ -440,7 +440,7 @@
                 // --- DATA PROPERTIES ---
                 clientStatus: @json(old('client_status', 'new')),
                 numberOfPets: (oldPets && oldPets.length > 0) ? oldPets.length : 1,
-                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' } ],
+                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' } ],
                 
                 // State for finding existing owners
                 findName: '',
@@ -461,7 +461,7 @@
 
                 // --- METHODS ---
                 createEmptyPet() {
-                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' };
+                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' };
                 },
                 addPet() { 
                     this.pets.push(this.createEmptyPet()); 
