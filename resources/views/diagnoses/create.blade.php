@@ -71,7 +71,7 @@
         <!-- Chief Complaints -->
         <div class="md:col-span-2">
             <label for="chief_complaints" class="block text-sm font-medium text-gray-700">Chief Complaints</label>
-            <textarea name="chief_complaints" id="chief_complaints" rows="3" required class="mt-1 block w-full ..."></textarea>
+            <textarea name="chief_complaints" id="chief_complaints" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
         </div>
 
         <!-- Assessment -->
@@ -83,7 +83,7 @@
             <!-- Diagnosis -->
             <div class="md:col-span-2">
                 <label for="diagnosis" class="block text-sm font-medium text-gray-700">Diagnosis</label>
-                <textarea name="diagnosis" id="diagnosis" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('diagnosis') }}</textarea>
+                <textarea name="diagnosis" id="diagnosis" rows="4"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('diagnosis') }}</textarea>
                 @error('diagnosis')
                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                 @enderror

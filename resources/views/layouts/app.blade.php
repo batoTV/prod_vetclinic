@@ -163,14 +163,32 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script>
+    // Set an interval to run a function every 5 minutes (300,000 milliseconds)
+    setInterval(function() {
+        // Get the CSRF token from the meta tag in your <head>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    <script>
-    // Reloads the page every 2 hours (7,200,000 ms) to keep the session alive
-    // This is 120 minutes * 60 seconds * 1000 milliseconds = 7,200,000 ms
-    setTimeout(function () {
-        window.location.reload(1);
-    }, 7200000); 
+        // Send a small, silent POST request to the keep-alive route
+        fetch('/keep-alive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        }).then(response => {
+            if (response.ok) {
+                console.log('Session kept alive.');
+            } else {
+                console.error('Failed to keep session alive.');
+            }
+        }).catch(error => {
+            console.error('Error keeping session alive:', error);
+        });
+
+    }, 300000); // 300,000 ms = 5 minutes
 </script>
+   
     
 </body>
 @stack('scripts') 

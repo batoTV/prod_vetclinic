@@ -70,12 +70,16 @@ class DiagnosisController extends Controller
     // 2. Create the diagnosis using the relationship.
     // This automatically adds the correct pet_id.
     $diagnosis = $pet->diagnoses()->create($validatedData);
+    
+      $appointmentsData = isset($validatedData['appointments']) ? 
+        array_filter($validatedData['appointments'], function($item) {
+            return !empty($item['appointment_date']) && !empty($item['title']);
+        }) : [];
 
-     if ($request->has('appointments')) {
-        foreach ($validatedData['appointments'] as $appointmentData) {
-            // Add the pet_id to each appointment before creating
+    // Now, loop through the CLEAN, FILTERED data
+    if (!empty($appointmentsData)) {
+        foreach ($appointmentsData as $appointmentData) {
             $appointmentData['pet_id'] = $pet->id; 
-            
             $diagnosis->appointments()->create($appointmentData);
         }
     }
