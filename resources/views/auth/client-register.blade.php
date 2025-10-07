@@ -21,7 +21,7 @@
                 isLoading: false,
                 findErrors: {},
                 ownerPets: [],
-                selectedPetId: null,
+                selectedPetIds: [],
                 selectedConsentType: '',
                 consentNotes: '',
                 consentModalOpen: false,
@@ -74,17 +74,34 @@
                         this.searchMessage = data.message;
                         if (data.success) {
                             this.foundOwner = data.owner;
-                           fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
+                            fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
                                 .then(res => res.json())
-                                .then(petData => { this.ownerPets = petData; });
+                                .then(petData => { 
+                                    this.ownerPets = petData;
+                                    this.selectedPetIds = []; // Reset selections for the new owner
+                                });
                         } else { 
                             this.foundOwner = null; 
                             this.ownerPets = [];
+                            this.selectedPetIds = []; // Also reset selections on failure
                         }
                     })
                     .catch(() => { this.searchMessage = 'An error occurred during the search. Please try again.'; })
                     .finally(() => { this.isLoading = false; });
                 },
+
+                // --- ADD THESE NEW METHODS ---
+                selectPet(pet) {
+                    this.selectedPets.push(pet);
+                    this.availablePets = this.availablePets.filter(p => p.id !== pet.id);
+                },
+                deselectPet(pet) {
+                    this.availablePets.push(pet);
+                    this.selectedPets = this.selectedPets.filter(p => p.id !== pet.id);
+                    // Sort available pets by name for consistency
+                    this.availablePets.sort((a, b) => a.name.localeCompare(b.name));
+                },
+
                 
                 // --- SIGNATURE PAD & CONSENT FORM LOGIC ---
                 submitConsentForm(event) {
@@ -334,24 +351,34 @@
                     
                     {{-- Step 2: Once owner is found, show the actual consent form fields --}}
                     <div x-show="foundOwner" x-transition>
-                        <form id="consentForm" method="POST" :action="selectedPetId ? `{{ url('/') }}/pets/${selectedPetId}/consents` : '#'" @submit.prevent="submitConsentForm">
+                        <form id="consentForm" method="POST" 
+                            action="{{ route('consents.store.multiple') }}" 
+                            @submit.prevent="submitConsentForm">
                             @csrf
                             {{-- These hidden inputs will be populated by Alpine before submission --}}
                             <input type="hidden" name="signature" id="signature-input">
                             <input type="hidden" name="notes" x-model="consentNotes">
                             <input type="hidden" name="consent_type" x-model="selectedConsentType">
 
-                            <div class="mt-4">
-                                <label for="pet_id_select" class="block font-medium text-sm text-gray-700">Select Pet for Consent</label>
-                                <select id="pet_id_select" name="pet_id" x-model="selectedPetId" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">Choose a pet...</option>
-                                    <template x-for="pet in ownerPets" :key="pet.id">
-                                        <option :value="pet.id" x-text="pet.name + ' (' + pet.species + ')'"></option>
-                                    </template>
-                                </select>
-                            </div>
+                         <select name="pet_ids[]" multiple class="hidden">
+            <template x-for="petId in selectedPetIds">
+                <option :value="petId" x-text="petId" selected></option>
+            </template>
+        </select>
+        
+        <h3 class="font-medium text-sm text-gray-700 mb-2">Select Pet(s) for Consent</h3>
+        <div class="border rounded-lg p-2 h-48 overflow-y-auto">
+            <template x-for="pet in ownerPets" :key="pet.id">
+                <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
+                    <input type="checkbox" :value="pet.id" x-model="selectedPetIds" 
+                           class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <span x-text="pet.name + ' (' + pet.species + ')'"></span>
+                </label>
+            </template>
+            <p x-show="ownerPets.length === 0" class="text-sm text-gray-400 text-center p-4">No pets found for this owner.</p>
+        </div>
 
-                            <div x-show="selectedPetId" x-transition class="mt-4">
+                            <div x-show="selectedPetIds.length > 0" x-transition class="mt-4">
                                 {{-- For NON-CONSENT, the notes field appears first and is required --}}
                                 <div x-show="selectedConsentType === 'non'" class="mb-4">
                                     <label for="notes" class="block font-medium text-sm text-gray-700">Procedure to Decline (Required)</label>

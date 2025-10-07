@@ -13,42 +13,46 @@ class ConsentController extends Controller
 {
   
     
-public function store(Request $request, Pet $pet)
+// The Pet $pet is removed from the method signature
+public function store(Request $request)
 {
     $validated = $request->validate([
-        // Add 'non' to the list of accepted types
-        
+        // This now expects an array of pet IDs from your multi-select form
+        'pet_ids'      => ['required', 'array'],
+        'pet_ids.*'    => ['required', 'exists:pets,id'],
         'consent_type' => ['required', 'string', 'in:general,surgery,non'], 
-        
-        // Make 'notes' required ONLY IF the type is 'non'
-        'notes' => [Rule::requiredIf($request->input('consent_type') === 'non'), 'nullable', 'string'],
-        
-        'signature' => ['required', 'string'],
+        'notes'        => [Rule::requiredIf($request->input('consent_type') === 'non'), 'nullable', 'string'],
+        'signature'    => ['required', 'string'],
     ]);
 
-    // Determine which PDF template to use
-    $pdfTemplate = 'pdfs.' . $validated['consent_type'] . '_consent';
+    // Loop through each pet ID that was submitted
+    foreach ($validated['pet_ids'] as $petId) {
+        // Find the pet for the current loop iteration
+        $pet = Pet::find($petId);
 
-    $dataForPdf = [
-        'ownerName' => $pet->owner->name,
-        'petName' => $pet->name,
-        'date' => now()->format('M d, Y'),
-        'signature' => $validated['signature'],
-        'notes' => $validated['notes'],
-    ];
+        // --- All of your existing PDF logic is now inside the loop ---
+        $pdfTemplate = 'pdfs.' . $validated['consent_type'] . '_consent';
 
-    $pdf = Pdf::loadView($pdfTemplate, $dataForPdf);
-    $filename = $validated['consent_type'] . '-consent-' . $pet->id . '-' . time() . '.pdf';
-    $filePath = 'consent_forms/' . $filename;
+        $dataForPdf = [
+            'ownerName' => $pet->owner->name,
+            'petName'   => $pet->name,
+            'date'      => now()->format('M d, Y'),
+            'signature' => $validated['signature'],
+            'notes'     => $validated['notes'],
+        ];
 
-    Storage::disk('public')->put($filePath, $pdf->output());
+        $pdf = Pdf::loadView($pdfTemplate, $dataForPdf);
+        $filename = $validated['consent_type'] . '-consent-' . $pet->id . '-' . time() . '.pdf';
+        $filePath = 'consent_forms/' . $filename;
 
-    // Save the record with the consent type
-    $pet->consents()->create([
-        'consent_type' => $validated['consent_type'],
-        'notes' => $validated['notes'],
-        'file_path' => $filePath,
-    ]);
+        Storage::disk('public')->put($filePath, $pdf->output());
+
+        $pet->consents()->create([
+            'consent_type' => $validated['consent_type'],
+            'notes'        => $validated['notes'],
+            'file_path'    => $filePath,
+        ]);
+    }
 
     return redirect()->route('client.success', ['action' => 'consent']);
 }

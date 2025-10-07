@@ -18,6 +18,11 @@ Route::post('/client-register/find', [ClientRegistrationController::class, 'find
 Route::post('/pets/{pet}/consents', [ConsentController::class, 'store'])->name('consents.store');
 Route::get('/register/success/{action?}', [ClientRegistrationController::class, 'success'])->name('client.success');
 Route::get('/owners/{owner}/pets', [OwnerController::class, 'getPetsJson'])->name('owners.pets.json');
+Route::post('/keep-alive', function () {
+    return response()->json(['success' => true]);
+})->middleware('web'); // Use 'web' for guests, or ['web', 'auth'] for logged-in users
+
+Route::post('/consents/store-multiple', [ConsentController::class, 'store'])->name('consents.store.multiple');
 
 
 // Authenticated Staff Routes - NO ROLE MIDDLEWARE

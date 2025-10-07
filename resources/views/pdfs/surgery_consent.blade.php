@@ -46,20 +46,23 @@
     </div>
 
     <div class="signature-section">
-        <table style="width: 100%;">
-            <tr>
-                <td class="signature-line" style="width: 50%;">
-                    <img src="{{ $signature }}" alt="Signature" class="signature-img">
-                    <br>
-                    {{ $ownerName }}
-                </td>
-                <td class="signature-line" style="width: 50%;">{{ $date }}</td>
-            </tr>
-            <tr>
-                <td>Signature of Owner / Representative</td>
-                <td>Date</td>
-            </tr>
-        </table>
+        <table style="width: 100%; margin-top: 50px; border-spacing: 20px 0;">
+    <tr>
+        {{-- Signature Column --}}
+        <td style="width: 60%; vertical-align: bottom; text-align: center;">
+            <img src="{{ $signature }}" style="width: 200px; height: 50px; display: block; margin: 0 auto;">
+            <hr style="border-top: 1px solid black; margin: 0;">
+            <p style="margin-top: 5px;">Signature of Owner / Representative</p>
+        </td>
+        
+        {{-- Date Column --}}
+        <td style="width: 40%; vertical-align: bottom; text-align: center;">
+            <p style="margin-bottom: 5px;">{{ $date }}</p>
+            <hr style="border-top: 1px solid black; margin: 0;">
+            <p style="margin-top: 5px;">Date</p>
+        </td>
+    </tr>
+</table>
         @if ($notes)
             <p style="margin-top: 20px;"><strong>Notes:</strong><br>{{ $notes }}</p>
         @endif
