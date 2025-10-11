@@ -42,6 +42,7 @@ class ClientRegistrationController extends Controller
      */
     private function storeNewOwner(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:owners'],

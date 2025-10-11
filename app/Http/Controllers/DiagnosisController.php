@@ -61,7 +61,7 @@ class DiagnosisController extends Controller
         'diagnosis' => 'nullable|string',
         'assessment' => 'nullable|string',
         'plan' => 'nullable|string',
-        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
         'appointments' => 'nullable|array', // Validate the main array
         'appointments.*.appointment_date' => 'nullable|date', // Changed from required_with
         'appointments.*.title' => 'nullable|string|max:255',
@@ -119,7 +119,7 @@ class DiagnosisController extends Controller
         // First, validate that xray_images is an array.
         'xray_images' => 'nullable|array',
         // Then, validate each item within that array.
-        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+        'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
     ]);
     
     // Update the main diagnosis fields
