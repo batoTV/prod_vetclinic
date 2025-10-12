@@ -252,7 +252,10 @@
                     <label :for="'pet_name_' + index" class="block font-medium text-sm text-gray-700">Pet's Name</label>
                     <input :id="'pet_name_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][name]'" x-model="pet.name" required>
                     {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.name']" x-text="errors['pets.' + index + '.name']" class="text-red-600 text-sm mt-1"></div>
+                    <div x-show="errors['pets.' + index + '.name']" 
+                     x-text="errors['pets.' + index + '.name']" 
+                     class="text-red-600 text-sm mt-1">
+                </div>
                 </div>
 
                 <div>
