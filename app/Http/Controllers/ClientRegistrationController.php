@@ -75,7 +75,7 @@ class ClientRegistrationController extends Controller
             if ($request->has('pets')) {
                 foreach ($request->pets as $petData) {
                     
-                    if (!empty($petData['name']) && !empty($petData['species'])) {
+                    if (!empty($petData['name'])) {
                         $pet = $owner->pets()->create([
                             'name' => $petData['name'],
                             'species' => $petData['species'],
@@ -133,7 +133,7 @@ class ClientRegistrationController extends Controller
             $owner = Owner::findOrFail($request->owner_id);
             if ($request->has('pets')) {
                 foreach ($request->pets as $petData) {
-                    if (!empty($petData['name']) && !empty($petData['species'])) {
+                    if (!empty($petData['name'])) {
                         $pet = $owner->pets()->create([
                             'name' => $petData['name'],
                             'species' => $petData['species'],
