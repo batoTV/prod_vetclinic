@@ -16,14 +16,19 @@ class ClientRegistrationController extends Controller
      * Show the client registration form.
      */
     public function create()
-    {
-        // Fetch all owners and load their pets at the same time
-        $ownersWithPets = Owner::with('pets')->get();
+{
+    // 1. Initialize the variable
+    $foundOwner = null;
 
-        return view('auth.client-register', [
-            'ownersWithPets' => $ownersWithPets,
-        ]);
+    // 2. Check if we are returning from a failed validation for an existing owner
+    if (old('client_status') === 'existing' && old('owner_id')) {
+        // If so, re-fetch the owner's data from the database
+        $foundOwner = Owner::find(old('owner_id'));
     }
+
+    // 3. Pass the foundOwner (or null) to the correct view at the very end
+    return view('auth.client-register', ['foundOwner' => $foundOwner]);
+}
 
     /**
      * Handle an incoming registration request.

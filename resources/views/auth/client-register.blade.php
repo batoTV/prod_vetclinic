@@ -6,7 +6,7 @@
     @endpush
 
     <script>
-        function clientRegisterData(oldPets,errors) {
+        function clientRegisterData(oldPets,errors, initialOwner) {
             return {
                 // --- DATA PROPERTIES ---
                 
@@ -27,6 +27,7 @@
                 consentModalOpen: false,
                 hasAgreedToTerms: false,
                 signaturePad: null,
+                foundOwner: initialOwner || null, 
                  
                 
 
@@ -184,7 +185,7 @@
             }
         }
     </script>
-    <div x-data="clientRegisterData(@js(old('pets')), @js($errors->toArray()))" x-init="init()">
+    <div x-data="clientRegisterData(@js(old('pets')), @js($errors->toArray()), @js($foundOwner ?? null))" x-init="init()">
         
         {{-- Section 1: Client Status Selection --}}
         <div class="mb-6 p-6 bg-white rounded-lg shadow-md">
