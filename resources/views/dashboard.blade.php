@@ -76,4 +76,72 @@
             {{ $todaysAppointments->links() }}
         </div>
     </div>
+   {{-- Today's Client Activity Report --}}
+<div class="bg-white p-6 rounded-lg shadow-md mt-8">
+    <h2 class="text-xl font-bold mb-4">Today's Clinic Activity</h2>
+
+    <div class="flow-root">
+        <ul role="list" class="-mb-4">
+            @forelse ($todaysActivities as $activity)
+                <li>
+                    <div class="relative pb-4">
+                        @if (!$loop->last)
+                            <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                        @endif
+
+                        <div class="relative flex items-start space-x-3">
+                            {{-- Icon based on activity type --}}
+                            <div>
+                                <div class="relative px-1">
+                                    <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
+                                        @if ($activity->type === 'new_pet')
+                                            <i class="fas fa-paw text-green-500"></i>
+                                        @elseif ($activity->type === 'new_diagnosis')
+                                            <i class="fas fa-notes-medical text-blue-500"></i>
+                                        @elseif ($activity->type === 'new_consent')
+                                            <i class="fas fa-file-signature text-yellow-500"></i>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- The Activity Description --}}
+                            <div class="min-w-0 flex-1 py-1.5">
+                                <div class="text-sm text-gray-500">
+                                    
+                                    {{-- NEW PET ACTIVITY --}}
+                                    @if ($activity->type === 'new_pet')
+                                        <strong class="font-medium text-gray-900">{{ $activity->model->owner->name }}</strong>
+                                        registered a new pet: 
+                                        <a href="{{ route('pets.show', $activity->model) }}" class="font-medium text-indigo-600 hover:underline">{{ $activity->model->name }}</a>
+                                    
+                                    {{-- NEW DIAGNOSIS ACTIVITY --}}
+                                    @elseif ($activity->type === 'new_diagnosis')
+                                        A <a href="{{ route('diagnoses.show', $activity->model) }}" class="font-medium text-indigo-600 hover:underline">medical record</a>
+                                        was created for 
+                                        <a href="{{ route('pets.show', $activity->model->pet) }}" class="font-medium text-indigo-600 hover:underline">{{ $activity->model->pet->name }}</a>
+                                        by {{ $activity->model->pet->owner->name }}.
+
+                                    {{-- NEW CONSENT ACTIVITY --}}
+                                    @elseif ($activity->type === 'new_consent')
+                                        <strong class="font-medium text-gray-900">{{ $activity->model->pet->owner->name }}</strong>
+                                        signed a "{{ ucfirst($activity->model->consent_type) }} Consent" form for 
+                                        <a href="{{ route('pets.show', ['pet' => $activity->model->pet, 'tab' => 'consent']) }}" class="font-medium text-indigo-600 hover:underline">{{ $activity->model->pet->name }}</a>
+                                    @endif
+                                    
+                                    {{-- The Time --}}
+                                    <span class="whitespace-nowrap text-xs">{{ $activity->timestamp->diffForHumans() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            @empty
+                <div class="text-center py-4">
+                    <p class="text-gray-500">No new activity today.</p>
+                </div>
+            @endforelse
+        </ul>
+    </div>
+</div>
 @endsection
