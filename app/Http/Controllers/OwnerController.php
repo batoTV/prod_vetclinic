@@ -11,28 +11,24 @@ class OwnerController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $query = Owner::query();
+{
+    // Add orderBy() here to set the default sort
+    $query = Owner::query()->orderBy('last_name', 'asc');
 
-        // Check if the search term is present and not empty
-        if ($request->has('search') && $request->input('search') != '') {
-            $searchTerm = $request->input('search');
-        
-            // This will search for the term in EITHER the first_name OR last_name column
-            $query->where(function ($subQuery) use ($searchTerm) {
-                $subQuery->where('first_name', 'like', '%' . $searchTerm . '%')
-                         ->orWhere('last_name', 'like', '%' . $searchTerm . '%');
-            });
-        }
-
-        // --- YOU ARE MISSING THIS PART ---
-
-        // 1. Finish the query by getting the results (with pagination)
-        $owners = $query->paginate(15);
-
-        // 2. Return the view and pass the $owners variable to it
-        return view('owners.index', ['owners' => $owners]);
+    // Check if the search term is present and not empty
+    if ($request->has('search') && $request->input('search') != '') {
+        $searchTerm = $request->input('search');
+    
+        $query->where(function ($subQuery) use ($searchTerm) {
+            $subQuery->where('first_name', 'like', '%' . $searchTerm . '%')
+                     ->orWhere('last_name', 'like', '%' . $searchTerm . '%');
+        });
     }
+
+    $owners = $query->paginate(15);
+
+    return view('owners.index', ['owners' => $owners]);
+}
 
     /**
      * Show the form for creating a new resource.

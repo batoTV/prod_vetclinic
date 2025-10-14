@@ -37,7 +37,7 @@
                         <td class="p-4">{{ $pet->name }}</td>
                         <td class="p-4">{{ $pet->species }}</td>
                         <td class="p-4">{{ $pet->breed }}</td>
-                        <td class="p-4">{{ $pet->owner->full_name }}</td>
+                        <td class="p-4">{{ strtoupper($pet->owner->last_name) }}, {{ $pet->owner->first_name }}</td>
                         <td class="p-4 text-center">
                             <a href="{{ url('/pets/' . $pet->id) }}"class="text-indigo-600 hover:text-indigo-800 mr-4" title="View Profile">
                                 <i class="fas fa-eye"></i>

@@ -12,39 +12,48 @@ class PetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request) // <-- THIS IS THE FIX
-    {
-       // Get the search term from the URL query string (e.g., /pets?search=buddy)
-        $searchTerm = $request->input('search');
+   public function index(Request $request)
+{
+    // Get the search term from the URL query string
+    $searchTerm = $request->input('search');
 
-        // Start with the base query, eager-loading the owner for performance
-        $query = Pet::with('owner')->latest();
+    // Start with the base query, eager-loading the owner for performance
+    $query = Pet::with('owner');
 
-        // If a search term exists, apply the filtering logic
-        if ($searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                // 1. Search by the pet's name
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  
-                  // 2. Search within the related owner's details
-                  ->orWhereHas('owner', function ($ownerQuery) use ($searchTerm) {
-                      // 2a. Search by owner's phone number
-                      $ownerQuery->where('phone_number', 'like', "%{$searchTerm}%")
-                                 
-                                 // 2b. Search the full name by concatenating first and last names
-                                 ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
-                  });
-            });
-        }
+    // --- NEW SORTING LOGIC ---
+    // 1. Join the owners table so we can sort by it
+    $query->join('owners', 'pets.owner_id', '=', 'owners.id')
+    // 2. Select only pet columns to avoid ID conflicts
+          ->select('pets.*') 
+    // 3. Set the default sort order to owner's last name
+          ->orderBy('owners.last_name', 'asc');
+    // --- END NEW SORTING LOGIC ---
 
-        // Paginate the results (either all pets or the filtered ones)
-        $pets = $query->paginate(15);
-
-        // Append the search query to pagination links to keep the search active
-        $pets->appends($request->query());
-
-        return view('pets.index', ['pets' => $pets]);
+    // If a search term exists, apply the filtering logic
+    if ($searchTerm) {
+        $query->where(function ($q) use ($searchTerm) {
+            // 1. Search by the pet's name (specified 'pets.name')
+            $q->where('pets.name', 'like', "%{$searchTerm}%")
+              
+              // 2. Search within the related owner's details
+              ->orWhereHas('owner', function ($ownerQuery) use ($searchTerm) {
+                  // 2a. Search by owner's phone number
+                  $ownerQuery->where('phone_number', 'like', "%{$searchTerm}%")
+                             
+                             // 2b. Search the full name
+                             ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
+              });
+        });
     }
+
+    // Paginate the results (either all pets or the filtered ones)
+    $pets = $query->paginate(15);
+
+    // Append the search query to pagination links
+    $pets->appends($request->query());
+
+    return view('pets.index', ['pets' => $pets]);
+}
  /**
      * Show the form for creating a new resource.
      */

@@ -48,7 +48,7 @@
             <tbody>
                 @forelse ($owners as $owner)
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="p-4">{{ $owner->full_name }}</td>
+                        <td class="p-4">{{ strtoupper($owner->last_name) }}, {{ $owner->first_name }}</td>
                         <td class="p-4">{{ $owner->email }}</td>
                         <td class="p-4">{{ $owner->phone_number }}</td>
                         <td class="p-4 text-center">
