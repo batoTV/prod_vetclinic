@@ -15,7 +15,8 @@ class Owner extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name', // Updated
+        'last_name',  // Updated
         'phone_number',
         'email',
         'address',
@@ -28,6 +29,13 @@ class Owner extends Model
     {
         return $this->hasMany(Pet::class);
     }
-
+    /**
+     * Get the owner's full name.
+     * This creates a virtual attribute: $owner->full_name
+     */
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
     
 }

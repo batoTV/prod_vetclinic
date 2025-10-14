@@ -49,7 +49,8 @@ class ClientRegistrationController extends Controller
 {
     // 1. VALIDATION RULES UPDATED FOR CLARITY AND ACCURACY
     $rules = [
-        'name' => ['required', 'string', 'max:255'],
+        'first_name' => ['required', 'string', 'max:255'],
+        'last_name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255', 'unique:owners'],
         'phone_number' => ['required', 'digits:11', 'unique:owners'],
         'address' => ['required', 'string'],
@@ -179,38 +180,43 @@ private function storeExistingOwner(Request $request)
     /**
      * Find an existing owner.
      */
-    public function findOwner(Request $request)
-    {
-        $request->validate([
-            'name' => 'required_without:phone_number|string|max:255',
-            'phone_number' => 'required_without:name|string|max:255',
-        ]);
+ public function findOwner(Request $request)
+{
+    $request->validate([
+        'name' => 'nullable|string|max:255',
+        'phone_number' => 'required|string',
+    ]);
 
-        $query = Owner::query();
+    $name = $request->input('name');
+    $phone = $request->input('phone_number');
 
-        if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
-        }
+    $query = Owner::query();
 
-        if ($request->filled('phone_number')) {
-            $query->where('phone_number', $request->phone_number);
-        }
+    // The phone number is the primary filter
+    $query->where('phone_number', $phone);
 
-        $owner = $query->first();
+    // If a name was also provided, use the concatenated search
+    if ($name) {
+        // This combines the first and last name columns and searches for the full phrase.
+        // It's more accurate for multi-word names.
+        $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$name}%"]);
+    }
 
-        if ($owner) {
-            return response()->json([
-                'success' => true, 
-                'owner' => $owner, 
-                'message' => 'Welcome back, ' . $owner->name . '! We\'ve found your record. Please add your pet\'s information below.'
-            ]);
-        }
+    $owner = $query->first();
 
+    if ($owner) {
         return response()->json([
-            'success' => false, 
-            'message' => 'We could not find a record matching that information. Please double-check your details or register as a new client.'
+            'success' => true,
+            'owner' => $owner,
+            'message' => 'Welcome back! We\'ve found your record. Please add your pet\'s information below.'
+        ]);
+    } else {
+        return response()->json([
+            'success' => false,
+            'message' => 'No record found with that name and phone number. Please double-check your information.'
         ]);
     }
+}
 
     /**
      * Show the registration success page.

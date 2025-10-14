@@ -1,22 +1,24 @@
 @extends('layouts.guest')
 
 @section('content')
-   @push('scripts')
+    @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     @endpush
 
     <script>
-        function clientRegisterData(oldPets,errors, initialOwner) {
+        function clientRegisterData(oldPets, errors, initialOwner) {
             return {
                 // --- DATA PROPERTIES ---
-                
                 clientStatus: @json(old('client_status', 'new')),
                 errors: errors || {},
                 numberOfPets: (oldPets && oldPets.length > 0) ? oldPets.length : 1,
-                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' } ],
-                findName: '',
+                pets: (oldPets && oldPets.length > 0) ? oldPets : [{ name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' }],
+                
+                // Use a single 'findName' for searching
+                findName: '', 
                 findPhone: '',
-                foundOwner: null,
+                
+                foundOwner: initialOwner || null,
                 searchMessage: '',
                 isLoading: false,
                 findErrors: {},
@@ -27,22 +29,19 @@
                 consentModalOpen: false,
                 hasAgreedToTerms: false,
                 signaturePad: null,
-                foundOwner: initialOwner || null, 
-                 
-                
 
                 // --- METHODS ---
                 createEmptyPet() {
-                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' };
+                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaint: '' };
                 },
-                addPet() { 
-                    this.pets.push(this.createEmptyPet()); 
+                addPet() {
+                    this.pets.push(this.createEmptyPet());
                     this.numberOfPets = this.pets.length;
                 },
-                removePet(index) { 
+                removePet(index) {
                     if (this.pets.length > 1) {
-                        this.pets.splice(index, 1); 
-                        this.numberOfPets = this.pets.length; 
+                        this.pets.splice(index, 1);
+                        this.numberOfPets = this.pets.length;
                     }
                 },
                 updatePetCount() {
@@ -51,10 +50,10 @@
                     if (count > 10) { this.numberOfPets = 10; }
 
                     const currentCount = this.pets.length;
-                    if (count > currentCount) { 
+                    if (count > currentCount) {
                         for (let i = currentCount; i < count; i++) this.pets.push(this.createEmptyPet());
-                    } else if (count < currentCount) { 
-                        this.pets.splice(count); 
+                    } else if (count < currentCount) {
+                        this.pets.splice(count);
                     }
                 },
                 findOwner() {
@@ -68,7 +67,10 @@
                     fetch('{{ route("client.find") }}', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                        body: JSON.stringify({ name: this.findName, phone_number: this.findPhone })
+                        body: JSON.stringify({ 
+                            name: this.findName, 
+                            phone_number: this.findPhone 
+                        })
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -77,32 +79,19 @@
                             this.foundOwner = data.owner;
                             fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
                                 .then(res => res.json())
-                                .then(petData => { 
+                                .then(petData => {
                                     this.ownerPets = petData;
-                                    this.selectedPetIds = []; // Reset selections for the new owner
+                                    this.selectedPetIds = [];
                                 });
-                        } else { 
-                            this.foundOwner = null; 
+                        } else {
+                            this.foundOwner = null;
                             this.ownerPets = [];
-                            this.selectedPetIds = []; // Also reset selections on failure
+                            this.selectedPetIds = [];
                         }
                     })
                     .catch(() => { this.searchMessage = 'An error occurred during the search. Please try again.'; })
                     .finally(() => { this.isLoading = false; });
                 },
-
-                // --- ADD THESE NEW METHODS ---
-                selectPet(pet) {
-                    this.selectedPets.push(pet);
-                    this.availablePets = this.availablePets.filter(p => p.id !== pet.id);
-                },
-                deselectPet(pet) {
-                    this.availablePets.push(pet);
-                    this.selectedPets = this.selectedPets.filter(p => p.id !== pet.id);
-                    // Sort available pets by name for consistency
-                    this.availablePets.sort((a, b) => a.name.localeCompare(b.name));
-                },
-
                 
                 // --- SIGNATURE PAD & CONSENT FORM LOGIC ---
                 submitConsentForm(event) {
@@ -122,7 +111,6 @@
                     if (!canvas) return;
                     this.signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(249, 250, 251)' });
                     this.resizeCanvas();
-
                     document.getElementById('clear-button').addEventListener('click', () => {
                         if (this.signaturePad) this.signaturePad.clear();
                     });
@@ -151,40 +139,27 @@
                 
                 // --- MAIN INITIALIZATION & WATCHERS ---
                 init() {
-    // Watch for changes in the main client status radio buttons
-    this.$watch('clientStatus', () => {
-        // This block now runs on EVERY radio button change, resetting everything.
-        this.foundOwner = null;
-        this.searchMessage = '';
-        this.ownerPets = [];
-        this.selectedPetId = null;
-        this.selectedConsentType = '';
-        this.hasAgreedToTerms = false;
-        this.findName = '';
-        this.findPhone = '';
-        this.consentNotes = '';
-        if (this.signaturePad) this.signaturePad.clear();
-    });
-
-    // Watch for changes in the consent type dropdown (this logic remains)
-    this.$watch('selectedConsentType', (value) => {
-        this.selectedPetId = null;
-        this.hasAgreedToTerms = false;
-        this.consentNotes = '';
-        if (this.signaturePad) this.signaturePad.clear();
-        
-        if (value) {
-            this.$nextTick(() => {
-                this.whenVisible('signature-pad', () => this.initSignaturePad());
-            });
-        }
-    });
-    
-    window.addEventListener("resize", () => { if (this.signaturePad) this.resizeCanvas(); });
-}
+                    this.$watch('clientStatus', () => {
+                        this.foundOwner = null; this.searchMessage = ''; this.ownerPets = [];
+                        this.selectedPetIds = []; this.selectedConsentType = ''; this.hasAgreedToTerms = false;
+                        this.findName = ''; this.findPhone = ''; this.consentNotes = '';
+                        if (this.signaturePad) this.signaturePad.clear();
+                    });
+                    this.$watch('selectedConsentType', (value) => {
+                        this.selectedPetIds = []; this.hasAgreedToTerms = false;
+                        this.consentNotes = ''; if (this.signaturePad) this.signaturePad.clear();
+                        if (value) {
+                            this.$nextTick(() => {
+                                this.whenVisible('signature-pad', () => this.initSignaturePad());
+                            });
+                        }
+                    });
+                    window.addEventListener("resize", () => { if (this.signaturePad) this.resizeCanvas(); });
+                }
             }
         }
     </script>
+
     <div x-data="clientRegisterData(@js(old('pets')), @js($errors->toArray()), @js($foundOwner ?? null))" x-init="init()">
         
         {{-- Section 1: Client Status Selection --}}
@@ -207,9 +182,18 @@
                 <div x-show="clientStatus === 'new'" x-transition>
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Your Information</h2>
                     
-                    {{-- All owner fields use `old()` to retain data after server-side validation errors --}}
-                    <div><label for="name" class="block font-medium text-sm text-gray-700">Full Name</label><input id="name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="name" value="{{ old('name') }}" required></div>
-                    @error('name')<span class="text-red-600 text-sm mt-1">{{ $message }}</span>@enderror
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="first_name" class="block font-medium text-sm text-gray-700">First Name</label>
+                            <input id="first_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="first_name" value="{{ old('first_name') }}" required>
+                            @error('first_name')<span class="text-red-600 text-sm mt-1">{{ $message }}</span>@enderror
+                        </div>
+                        <div>
+                            <label for="last_name" class="block font-medium text-sm text-gray-700">Last Name</label>
+                            <input id="last_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" name="last_name" value="{{ old('last_name') }}" required>
+                            @error('last_name')<span class="text-red-600 text-sm mt-1">{{ $message }}</span>@enderror
+                        </div>
+                    </div>
                     
                     <div class="mt-4"><label for="email" class="block font-medium text-sm text-gray-700">Email</label><input id="email" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="email" name="email" value="{{ old('email') }}" required></div>
                     @error('email')<span class="text-red-600 text-sm mt-1">{{ $message }}</span>@enderror
@@ -224,7 +208,10 @@
                 {{-- Subsection: Existing Client Search --}}
                 <div x-show="clientStatus === 'existing'" x-transition>
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Find Your Record</h2>
-                    <div><label for="find_name" class="block font-medium text-sm text-gray-700">Full Name</label><input id="find_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName"></div>
+                    <div>
+                        <label for="find_name" class="block font-medium text-sm text-gray-700">Full Name</label>
+                        <input id="find_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName">
+                    </div>
                     <div class="mt-4"><label for="find_phone" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="find_phone" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="tel" x-model.debounce.300ms="findPhone"></div>
                     <div x-show="findErrors.general" x-text="findErrors.general" class="mt-4 p-3 bg-red-100 text-red-700 rounded-md"></div>
                     <div class="mt-4"><button type="button" @click="findOwner()" :disabled="isLoading" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 disabled:opacity-50"><span x-text="isLoading ? 'Searching...' : 'Find Me'"></span></button></div>
@@ -234,94 +221,71 @@
 
                 {{-- Subsection: Pet Information (Dynamic) --}}
                 <div class="mt-8 pt-6 border-t" x-show="clientStatus === 'new' || (clientStatus === 'existing' && foundOwner)">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Pet Information</h2>
-        <div class="flex items-center space-x-2">
-            <label for="numberOfPets" class="block font-medium text-sm text-gray-700">Number of Pets:</label>
-            <input id="numberOfPets" type="number" class="w-20 border-gray-300 rounded-md shadow-sm" x-model.number="numberOfPets" @input.debounce="updatePetCount()" min="1" max="10"/>
-        </div>
-    </div>
-    <template x-for="(pet, index) in pets" :key="index">
-        <div class="border p-4 rounded-md mt-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-lg mb-2" x-text="'Pet ' + (index + 1)"></h3>
-                <button type="button" x-show="pets.length > 1" @click="removePet(index)" class="text-red-500 hover:text-red-700 font-bold">&times; Remove</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                <div>
-                    <label :for="'pet_name_' + index" class="block font-medium text-sm text-gray-700">Pet's Name</label>
-                    <input :id="'pet_name_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][name]'" x-model="pet.name" required>
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.name']" 
-                     x-text="errors['pets.' + index + '.name']" 
-                     class="text-red-600 text-sm mt-1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-800">Pet Information</h2>
+                        <div class="flex items-center space-x-2">
+                            <label for="numberOfPets" class="block font-medium text-sm text-gray-700">Number of Pets:</label>
+                            <input id="numberOfPets" type="number" class="w-20 border-gray-300 rounded-md shadow-sm" x-model.number="numberOfPets" @input.debounce="updatePetCount()" min="1" max="10"/>
+                        </div>
+                    </div>
+                    <template x-for="(pet, index) in pets" :key="index">
+                        <div class="border p-4 rounded-md mt-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-lg mb-2" x-text="'Pet ' + (index + 1)"></h3>
+                                <button type="button" x-show="pets.length > 1" @click="removePet(index)" class="text-red-500 hover:text-red-700 font-bold">&times; Remove</button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label :for="'pet_name_' + index" class="block font-medium text-sm text-gray-700">Pet's Name</label>
+                                    <input :id="'pet_name_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][name]'" x-model="pet.name" required>
+                                    <div x-show="errors['pets.' + index + '.name']" x-text="errors['pets.' + index + '.name']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div>
+                                    <label :for="'pet_species_' + index" class="block font-medium text-sm text-gray-700">Species</label>
+                                    <select :id="'pet_species_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][species]'" x-model="pet.species" required>
+                                        <option value="">Select a Species</option>
+                                        <option value="Feline">Feline</option>
+                                        <option value="Canine">Canine</option>
+                                    </select>
+                                    <div x-show="errors['pets.' + index + '.species']" x-text="errors['pets.' + index + '.species']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div>
+                                    <label :for="'pet_breed_' + index" class="block font-medium text-sm text-gray-700">Breed</label>
+                                    <input :id="'pet_breed_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][breed]'" x-model="pet.breed">
+                                    <div x-show="errors['pets.' + index + '.breed']" x-text="errors['pets.' + index + '.breed']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div>
+                                    <label :for="'pet_birth_date_' + index" class="block font-medium text-sm text-gray-700">Birth Date</label>
+                                    <input :id="'pet_birth_date_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="date" :name="'pets[' + index + '][birth_date]'" x-model="pet.birth_date" required>
+                                    <div x-show="errors['pets.' + index + '.birth_date']" x-text="errors['pets.' + index + '.birth_date']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label :for="'pet_gender_' + index" class="block font-medium text-sm text-gray-700">Gender</label>
+                                    <select :id="'pet_gender_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][gender]'" x-model="pet.gender">
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                    </select>
+                                    <div x-show="errors['pets.' + index + '.gender']" x-text="errors['pets.' + index + '.gender']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label :for="'pet_markings_' + index" class="block font-medium text-sm text-gray-700">Markings / Color</label>
+                                    <input :id="'pet_markings_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][markings]'" x-model="pet.markings">
+                                    <div x-show="errors['pets.' + index + '.markings']" x-text="errors['pets.' + index + '.markings']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label :for="'pet_allergies_' + index" class="block font-medium text-sm text-gray-700">Medical Notes / Allergies</label>
+                                    <textarea :id="'pet_allergies_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][allergies]'" x-model="pet.allergies"></textarea>
+                                    <div x-show="errors['pets.' + index + '.allergies']" x-text="errors['pets.' + index + '.allergies']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label :for="'pet_chief_complaint_' + index" class="block font-medium text-sm text-gray-700">Reason for Visit (Chief Complaint)</label>
+                                    <textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaint]'" x-model="pet.chief_complaint"></textarea>
+                                    <div x-show="errors['pets.' + index + '.chief_complaint']" x-text="errors['pets.' + index + '.chief_complaint']" class="text-red-600 text-sm mt-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
-                </div>
-
-                <div>
-                <label :for="'pet_species_' + index" class="block font-medium text-sm text-gray-700">Species</label>
-                
-                {{-- The <input> is replaced with a <select> dropdown --}}
-                <select :id="'pet_species_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][species]'" x-model="pet.species">
-                    <option value="">Select a Species</option>
-                    <option value="Feline">Feline</option>
-                    <option value="Canine">Canine</option>
-                </select>
-                
-                {{-- Error Message --}}
-                <div x-show="errors['pets.' + index + '.species']" x-text="errors['pets.' + index + '.species']" class="text-red-600 text-sm mt-1"></div>
-            </div>
-
-                <div>
-                    <label :for="'pet_breed_' + index" class="block font-medium text-sm text-gray-700">Breed</label>
-                    <input :id="'pet_breed_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][breed]'" x-model="pet.breed">
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.breed']" x-text="errors['pets.' + index + '.breed']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div>
-                    <label :for="'pet_birth_date_' + index" class="block font-medium text-sm text-gray-700">Birth Date</label>
-                    <input :id="'pet_birth_date_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="date" :name="'pets[' + index + '][birth_date]'" x-model="pet.birth_date">
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.birth_date']" x-text="errors['pets.' + index + '.birth_date']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div class="col-span-1 md:col-span-2">
-                    <label :for="'pet_gender_' + index" class="block font-medium text-sm text-gray-700">Gender</label>
-                    <select :id="'pet_gender_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][gender]'" x-model="pet.gender">
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.gender']" x-text="errors['pets.' + index + '.gender']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div class="col-span-1 md:col-span-2">
-                    <label :for="'pet_markings_' + index" class="block font-medium text-sm text-gray-700">Markings / Color</label>
-                    <input :id="'pet_markings_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" :name="'pets[' + index + '][markings]'" x-model="pet.markings">
-                     {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.markings']" x-text="errors['pets.' + index + '.markings']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div class="col-span-1 md:col-span-2">
-                    <label :for="'pet_allergies_' + index" class="block font-medium text-sm text-gray-700">Medical Notes / Allergies</label>
-                    <textarea :id="'pet_allergies_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][allergies]'" x-model="pet.allergies"></textarea>
-                    {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.allergies']" x-text="errors['pets.' + index + '.allergies']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-                <div class="col-span-1 md:col-span-2">
-                    <label :for="'pet_chief_complaint_' + index" class="block font-medium text-sm text-gray-700">Reason for Visit (Chief Complaint)</label>
-                    <textarea :id="'pet_chief_complaint_' + index" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" :name="'pets[' + index + '][chief_complaints]'" x-model="pet.chief_complaints"></textarea>
-                     {{-- Error Message --}}
-                    <div x-show="errors['pets.' + index + '.chief_complaints']" x-text="errors['pets.' + index + '.chief_complaints']" class="text-red-600 text-sm mt-1"></div>
-                </div>
-
-            </div>
-        </div>
-    </template>
-</div>
                 <div class="flex items-center justify-end mt-8" x-show="clientStatus === 'new' || (clientStatus === 'existing' && foundOwner)"><button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">Register</button></div>
             </div>
         </form>
@@ -329,7 +293,6 @@
         {{-- Section 3: Consent Form --}}
         <div x-show="clientStatus === 'consent'" x-transition x-cloak>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Select Consent Type</h2>
                 <div>
                     <label for="consent_type_register" class="block font-medium text-sm text-gray-700">Type of Consent</label>
@@ -341,55 +304,49 @@
                     </select>
                 </div>
 
-                {{-- This section appears after a consent type is chosen --}}
                 <div x-show="selectedConsentType" x-transition class="mt-6 pt-6 border-t">
-                    {{-- Step 1: Find the owner record (if not already found) --}}
                     <div x-show="!foundOwner">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Find Owner Record</h2>
-                        <div><label for="find_name_consent" class="block font-medium text-sm text-gray-700">Full Name</label><input id="find_name_consent" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName"></div>
+                        <div>
+                            <label for="find_name_consent" class="block font-medium text-sm text-gray-700">Full Name</label>
+                            <input id="find_name_consent" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName">
+                        </div>
                         <div class="mt-4"><label for="find_phone_consent" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="find_phone_consent" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="tel" x-model.debounce.300ms="findPhone"></div>
                         <div x-show="findErrors.general" x-text="findErrors.general" class="mt-4 p-3 bg-red-100 text-red-700 rounded-md"></div>
                         <div class="mt-4"><button type="button" @click="findOwner()" :disabled="isLoading" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 disabled:opacity-50"><span x-text="isLoading ? 'Searching...' : 'Find Record'"></span></button></div>
                     </div>
                     <div x-show="searchMessage" x-text="searchMessage" class="mt-4 p-4 rounded-md" :class="foundOwner ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"></div>
                     
-                    {{-- Step 2: Once owner is found, show the actual consent form fields --}}
                     <div x-show="foundOwner" x-transition>
-                        <form id="consentForm" method="POST" 
-                            action="{{ route('consents.store.multiple') }}" 
-                            @submit.prevent="submitConsentForm">
+                        <form id="consentForm" method="POST" action="{{ route('consents.store.multiple') }}" @submit.prevent="submitConsentForm">
                             @csrf
-                            {{-- These hidden inputs will be populated by Alpine before submission --}}
                             <input type="hidden" name="signature" id="signature-input">
                             <input type="hidden" name="notes" x-model="consentNotes">
                             <input type="hidden" name="consent_type" x-model="selectedConsentType">
 
-                         <select name="pet_ids[]" multiple class="hidden">
-            <template x-for="petId in selectedPetIds">
-                <option :value="petId" x-text="petId" selected></option>
-            </template>
-        </select>
-        
-        <h3 class="font-medium text-sm text-gray-700 mb-2">Select Pet(s) for Consent</h3>
-        <div class="border rounded-lg p-2 h-48 overflow-y-auto">
-            <template x-for="pet in ownerPets" :key="pet.id">
-                <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
-                    <input type="checkbox" :value="pet.id" x-model="selectedPetIds" 
-                           class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <span x-text="pet.name + ' (' + pet.species + ')'"></span>
-                </label>
-            </template>
-            <p x-show="ownerPets.length === 0" class="text-sm text-gray-400 text-center p-4">No pets found for this owner.</p>
-        </div>
+                            <select name="pet_ids[]" multiple class="hidden">
+                                <template x-for="petId in selectedPetIds">
+                                    <option :value="petId" x-text="petId" selected></option>
+                                </template>
+                            </select>
+                            
+                            <h3 class="font-medium text-sm text-gray-700 mb-2">Select Pet(s) for Consent</h3>
+                            <div class="border rounded-lg p-2 h-48 overflow-y-auto">
+                                <template x-for="pet in ownerPets" :key="pet.id">
+                                    <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
+                                        <input type="checkbox" :value="pet.id" x-model="selectedPetIds" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        <span x-text="pet.name + ' (' + pet.species + ')'"></span>
+                                    </label>
+                                </template>
+                                <p x-show="ownerPets.length === 0" class="text-sm text-gray-400 text-center p-4">No pets found for this owner.</p>
+                            </div>
 
                             <div x-show="selectedPetIds.length > 0" x-transition class="mt-4">
-                                {{-- For NON-CONSENT, the notes field appears first and is required --}}
                                 <div x-show="selectedConsentType === 'non'" class="mb-4">
                                     <label for="notes" class="block font-medium text-sm text-gray-700">Procedure to Decline (Required)</label>
                                     <textarea x-model="consentNotes" id="notes" rows="3" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" :required="selectedConsentType === 'non'"></textarea>
                                 </div>
 
-                                {{-- The signature block appears after notes are filled for non-consent, or immediately for others --}}
                                 <div x-show="selectedConsentType !== 'non' || (selectedConsentType === 'non' && consentNotes.trim() !== '')" x-transition>
                                     <div class="mb-4">
                                         <button type="button" @click="consentModalOpen = true" class="text-indigo-600 hover:underline font-semibold">
@@ -404,7 +361,6 @@
                                             </div>
                                             <button type="button" id="clear-button" class="mt-2 text-sm text-indigo-600 hover:underline">Clear Signature</button>
                                         </div>
-                                        {{-- For regular consent, the notes field is optional and appears here --}}
                                         <div x-show="selectedConsentType !== 'non'">
                                             <label for="notes_optional" class="block font-medium text-sm text-gray-700">Notes (Optional)</label>
                                             <textarea x-model="consentNotes" id="notes_optional" rows="3" class="w-full mt-1 border-gray-300 rounded-md shadow-sm"></textarea>
@@ -460,187 +416,4 @@
             </div>
         </div>
     </div>
-
-    <!-- @push('scripts')
-    {{-- This script is required for the signature pad functionality --}}
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    @ebd    
-    <script>
-        function clientRegisterData(oldPets) {
-            return {
-                // --- DATA PROPERTIES ---
-                clientStatus: @json(old('client_status', 'new')),
-                numberOfPets: (oldPets && oldPets.length > 0) ? oldPets.length : 1,
-                pets: (oldPets && oldPets.length > 0) ? oldPets : [ { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' } ],
-                
-                // State for finding existing owners
-                findName: '',
-                findPhone: '',
-                foundOwner: null,
-                searchMessage: '',
-                isLoading: false,
-                findErrors: {},
-
-                // State for consent form
-                ownerPets: [],
-                selectedPetId: null,
-                selectedConsentType: '',
-                consentNotes: '',
-                consentModalOpen: false,
-                hasAgreedToTerms: false,
-                signaturePad: null,
-
-                // --- METHODS ---
-                createEmptyPet() {
-                    return { name: '', species: '', breed: '', birth_date: '', gender: 'Male', allergies: '', markings: '', chief_complaints: '' };
-                },
-                addPet() { 
-                    this.pets.push(this.createEmptyPet()); 
-                    this.numberOfPets = this.pets.length;
-                },
-                removePet(index) { 
-                    if (this.pets.length > 1) {
-                        this.pets.splice(index, 1); 
-                        this.numberOfPets = this.pets.length; 
-                    }
-                },
-                updatePetCount() {
-                    const count = parseInt(this.numberOfPets) || 1;
-                    if (count < 1) { this.numberOfPets = 1; }
-                    if (count > 10) { this.numberOfPets = 10; }
-
-                    const currentCount = this.pets.length;
-                    if (count > currentCount) { 
-                        for (let i = currentCount; i < count; i++) this.pets.push(this.createEmptyPet());
-                    } else if (count < currentCount) { 
-                        this.pets.splice(count); 
-                    }
-                },
-                findOwner() {
-                    this.isLoading = true; this.searchMessage = ''; this.findErrors = {};
-                    if (!this.findName.trim() && !this.findPhone.trim()) {
-                        this.findErrors.general = 'Please enter a name or a phone number to search.';
-                        this.isLoading = false; return;
-                    }
-
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    fetch('{{ route("client.find") }}', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                        body: JSON.stringify({ name: this.findName, phone_number: this.findPhone })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.searchMessage = data.message;
-                        if (data.success) {
-                            this.foundOwner = data.owner;
-                            // Fetch pets for this owner
-                           fetch(`{{ url('/') }}/owners/${this.foundOwner.id}/pets`)
-                                .then(res => res.json())
-                                .then(petData => { this.ownerPets = petData; });
-                        } else { 
-                            this.foundOwner = null; 
-                            this.ownerPets = [];
-                        }
-                    })
-                    .catch(() => { this.searchMessage = 'An error occurred during the search. Please try again.'; })
-                    .finally(() => { this.isLoading = false; });
-                },
-                
-                // --- SIGNATURE PAD & CONSENT FORM LOGIC ---
-                submitConsentForm(event) {
-                    if (!this.signaturePad || this.signaturePad.isEmpty()) {
-                        alert("Please provide a signature before saving.");
-                        return; // Stop the submission
-                    }
-                    if (!this.hasAgreedToTerms) {
-                        alert("Please read and agree to the consent terms before saving.");
-                        return;
-                    }
-                    // All checks passed, populate hidden input and submit the form
-                    document.getElementById('signature-input').value = this.signaturePad.toDataURL('image/png');
-                    event.target.submit(); // Programmatically submit the form
-                },
-                initSignaturePad() {
-                    const canvas = document.getElementById('signature-pad');
-                    if (!canvas) return;
-                    this.signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(249, 250, 251)' });
-                    this.resizeCanvas();
-
-                    document.getElementById('clear-button').addEventListener('click', () => {
-                        if (this.signaturePad) this.signaturePad.clear();
-                    });
-                },
-                resizeCanvas() {
-                    const canvas = document.getElementById('signature-pad');
-                    if (!canvas || !this.signaturePad) return;
-                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                    canvas.width = canvas.offsetWidth * ratio;
-                    canvas.height = canvas.offsetHeight * ratio;
-                    canvas.getContext("2d").scale(ratio, ratio);
-                    this.signaturePad.fromData(this.signaturePad.toData()); // Redraw signature
-                },
-                whenVisible(elementId, callback) {
-                    // Utility to run a callback when a conditionally rendered element becomes visible
-                    const observer = new IntersectionObserver((entries, obs) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                callback();
-                                obs.disconnect(); // We only need to run it once
-                            }
-                        });
-                    });
-                    const el = document.getElementById(elementId);
-                    if (el) observer.observe(el);
-                },
-                
-                // --- MAIN INITIALIZATION & WATCHERS ---
-                init() {
-    // Watch for changes in the main client status radio buttons
-    this.$watch('clientStatus', (newValue, oldValue) => {
-        // A. If switching to 'new client', always do a FULL reset.
-        if (newValue === 'new') {
-            this.foundOwner = null; this.searchMessage = ''; this.ownerPets = [];
-            this.selectedPetId = null; this.selectedConsentType = ''; this.hasAgreedToTerms = false;
-            this.findName = ''; this.findPhone = ''; this.consentNotes = '';
-            if (this.signaturePad) this.signaturePad.clear();
-            return; // Stop here
-        }
-
-        // B. If switching BETWEEN 'existing' and 'consent', do a PARTIAL reset.
-        // This keeps the search terms and the found owner intact.
-        if ((newValue === 'existing' && oldValue === 'consent') || (newValue === 'consent' && oldValue === 'existing')) {
-            // Only reset things specific to the new task
-            this.selectedPetId = null;
-            this.hasAgreedToTerms = false;
-            this.consentNotes = '';
-            if (this.signaturePad) this.signaturePad.clear();
-        } else {
-            // C. For any other switch (e.g., from 'new' to 'existing'), do a full reset.
-            this.foundOwner = null; this.searchMessage = ''; this.ownerPets = [];
-            this.selectedPetId = null; this.selectedConsentType = ''; this.hasAgreedToTerms = false;
-            this.findName = ''; this.findPhone = ''; this.consentNotes = '';
-            if (this.signaturePad) this.signaturePad.clear();
-        }
-    });
-
-    // Watch for changes in the consent type dropdown (this logic remains the same)
-    this.$watch('selectedConsentType', (value) => {
-        // Reset parts of the consent form if the type changes
-        this.selectedPetId = null; this.hasAgreedToTerms = false;
-        this.consentNotes = '';
-        if (this.signaturePad) this.signaturePad.clear();
-        
-        if (value) {
-            this.$nextTick(() => {
-                this.whenVisible('signature-pad', () => this.initSignaturePad());
-            });
-        }
-    });
-    window.addEventListener("resize", () => { if (this.signaturePad) this.resizeCanvas(); });
-}
-            }
-        }
-    </script>
-    @endpush -->
 @endsection

@@ -65,7 +65,7 @@ class DashboardController extends Controller
     })
     ->filter()           // Remove any nulls from the owner list
     ->unique('id')       // Get only unique owners based on their ID
-    ->sortBy('name');     // Sort them alphabetically
+    ->sortBy('last_name');     // Sort them alphabetically
 
     return view('dashboard', [
         'totalPets' => $totalPets,

@@ -10,17 +10,27 @@ class OwnerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request) // <-- THIS IS THE FIX
+    public function index(Request $request)
     {
         $query = Owner::query();
 
-        if ($request->has('search')) {
+        // Check if the search term is present and not empty
+        if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
-            $query->where('name', 'like', '%' . $searchTerm . '%');
+        
+            // This will search for the term in EITHER the first_name OR last_name column
+            $query->where(function ($subQuery) use ($searchTerm) {
+                $subQuery->where('first_name', 'like', '%' . $searchTerm . '%')
+                         ->orWhere('last_name', 'like', '%' . $searchTerm . '%');
+            });
         }
 
+        // --- YOU ARE MISSING THIS PART ---
+
+        // 1. Finish the query by getting the results (with pagination)
         $owners = $query->paginate(15);
 
+        // 2. Return the view and pass the $owners variable to it
         return view('owners.index', ['owners' => $owners]);
     }
 
@@ -37,16 +47,17 @@ class OwnerController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
-            'email' => 'required|email|unique:owners,email',
-            'address' => 'required|string',
-        ]);
+          $validatedData = $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'phone_number' => 'required|digits:11|unique:owners,phone_number',
+        'email' => 'required|email|max:255|unique:owners,email',
+        'address' => 'required|string',
+    ]);
 
         Owner::create($validatedData);
 
-        return redirect('/owners')->with('success', 'Owner has been added successfully.');
+        return redirect()->route('owners.index')->with('success', 'Owner added successfully.');
     }
 
     /**
@@ -63,8 +74,8 @@ class OwnerController extends Controller
     public function update(Request $request, Owner $owner)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:owners,email,' . $owner->id,
             'address' => 'required|string',
         ]);

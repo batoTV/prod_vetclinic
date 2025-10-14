@@ -14,21 +14,35 @@ class PetController extends Controller
      */
     public function index(Request $request) // <-- THIS IS THE FIX
     {
-        // Start with the base query
-        $query = Pet::with('owner');
+       // Get the search term from the URL query string (e.g., /pets?search=buddy)
+        $searchTerm = $request->input('search');
 
-        // If there is a search term, filter the results
-        if ($request->has('search')) {
-            $searchTerm = $request->input('search');
-            $query->where('name', 'like', '%' . $searchTerm . '%')
-                  ->orWhereHas('owner', function ($q) use ($searchTerm) {
-                      $q->where('name', 'like', '%' . $searchTerm . '%');
+        // Start with the base query, eager-loading the owner for performance
+        $query = Pet::with('owner')->latest();
+
+        // If a search term exists, apply the filtering logic
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                // 1. Search by the pet's name
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  
+                  // 2. Search within the related owner's details
+                  ->orWhereHas('owner', function ($ownerQuery) use ($searchTerm) {
+                      // 2a. Search by owner's phone number
+                      $ownerQuery->where('phone_number', 'like', "%{$searchTerm}%")
+                                 
+                                 // 2b. Search the full name by concatenating first and last names
+                                 ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$searchTerm}%"]);
                   });
+            });
         }
 
-        // Get the final results
-        $pets = $query->paginate(15); 
-        
+        // Paginate the results (either all pets or the filtered ones)
+        $pets = $query->paginate(15);
+
+        // Append the search query to pagination links to keep the search active
+        $pets->appends($request->query());
+
         return view('pets.index', ['pets' => $pets]);
     }
  /**

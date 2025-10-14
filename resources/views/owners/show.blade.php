@@ -9,7 +9,7 @@
             <span class="text-4xl font-bold">{{ substr($owner->name, 0, 1) }}</span>
         </div>
         <div class="ml-6">
-            <h2 class="text-4xl font-bold">{{ $owner->name }}</h2>
+            <h2 class="text-4xl font-bold">{{ $owner->full_name }}</h2>
         </div>
     </div>
 

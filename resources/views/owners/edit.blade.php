@@ -12,9 +12,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Full Name -->
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" name="name" id="name" required value="{{ $owner->name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
+    <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+    <input type="text" name="first_name" id="first_name" required value="{{ $owner->first_name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+</div>
+
+<div>
+    <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+    <input type="text" name="last_name" id="last_name" required value="{{ $owner->last_name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+</div>
 
             <!-- Phone Number -->
             <div>

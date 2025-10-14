@@ -63,7 +63,7 @@
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h3 class="text-xl font-bold mb-4 border-b pb-2">Owner Information</h3>
             <div class="space-y-3 text-gray-700">
-                <div><p class="font-semibold">Name:</p><p>{{ $pet->owner->name }}</p></div>
+                <div><p class="font-semibold">Name:</p><p>{{ $pet->owner->full_name }}</p></div>
                 <div><p class="font-semibold">Email:</p><p>{{ $pet->owner->email }}</p></div>
                 <div><p class="font-semibold">Phone:</p><p>{{ $pet->owner->phone_number }}</p></div>
             </div>

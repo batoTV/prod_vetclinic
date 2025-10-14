@@ -52,7 +52,7 @@
                     @forelse ($todaysAppointmentsList as $appointment)
                         <tr class="border-b hover:bg-gray-100 cursor-pointer" onclick="window.location='{{ url('/pets/' . $appointment->pet->id . '?tab=upcoming') }}';">
                             <td class="p-4">{{ $appointment->pet->name }}</td>
-                            <td class="p-4">{{ $appointment->pet->owner->name }}</td>
+                            <td class="p-4">{{ $appointment->pet->owner->full_name }}</td>
                             <td class="p-4">{{ $appointment->pet->owner->email }}</td>
                             <td class="p-4">{{ $appointment->pet->owner->phone_number }}</td>
                             <td class="p-4">{{ $appointment->title }}</td>
@@ -72,7 +72,7 @@
 
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
+<!-- 
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-bold mb-4">Today's Clinic Activity</h2>
             <div class="max-h-[600px] overflow-y-auto pr-4">
@@ -124,31 +124,31 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-bold mb-4">Today's Visiting Clients</h2>
-            <div class="max-h-[600px] overflow-y-auto">
-                <ul role="list" class="divide-y divide-gray-200">
-                    @forelse ($uniqueActiveOwners as $owner)
-                        <li class="py-3">
-                            <a href="{{ route('owners.show', $owner) }}" class="flex items-center space-x-3 group">
-                                <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-500"></i>
-                                </div>
-                                <span class="text-sm font-medium text-gray-900 group-hover:text-indigo-600">
-                                    {{ $owner->name }}
-                                </span>
-                            </a>
-                        </li>
-                    @empty
-                        <li class="py-3 text-center text-gray-500">
-                            No clients have visited yet today.
-                        </li>
-                    @endforelse
-                </ul>
-            </div>
-        </div>
-
+             {{-- This wrapper makes the list scrollable --}}
+    <div class="max-h-[600px] overflow-y-auto border rounded-lg p-2">
+        <ul role="list" class="divide-y divide-gray-200">
+            @forelse ($uniqueActiveOwners as $owner)
+                <li class="py-3 px-2">
+                    <a href="{{ route('owners.show', $owner) }}" class="flex items-center space-x-3 group">
+                        <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-500"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900 group-hover:text-indigo-600">
+                            {{-- This will now display in "Last Name, First Name" format --}}
+                            <span class="uppercase">{{ $owner->last_name }}</span>, {{ $owner->first_name }}
+                        </span>
+                    </a>
+                </li>
+            @empty
+                <li class="py-3 text-center text-gray-500">
+                    No clients have visited yet today.
+                </li>
+            @endforelse
+        </ul>
     </div>
+</div>
      @endsection
