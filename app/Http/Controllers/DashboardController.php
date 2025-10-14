@@ -24,10 +24,24 @@ class DashboardController extends Controller
     // OPTIMIZATION: Use count() instead of paginate() for the stats card
     $todaysAppointmentsCount = Appointment::whereDate('appointment_date', today())->count();
 
-      $todaysAppointmentsList = Appointment::with('pet.owner')
-                                        ->whereDate('appointment_date', today())
-                                        ->orderBy('appointment_date', 'asc')
-                                        ->paginate(15); 
+   $query = Appointment::with('pet.owner');
+
+// Join pets and owners tables so we can sort by owner's name
+$query->join('pets', 'appointments.pet_id', '=', 'pets.id')
+      ->join('owners', 'pets.owner_id', '=', 'owners.id');
+
+// Apply your date filter
+$query->whereDate('appointments.appointment_date', today())
+// IMPORTANT: Select only appointment columns to avoid conflicts
+      ->select('appointments.*') 
+// Set the new sort order
+      ->orderBy('owners.last_name', 'asc'); 
+
+// (Optional) Add a secondary sort by time
+// ->orderBy('appointments.appointment_date', 'asc');
+
+// Paginate the final results
+$todaysAppointmentsList = $query->paginate(15);
 
     // --- FETCH TODAY'S ACTIVITIES ---
     $newlyAddedPets = Pet::with('owner')->whereDate('created_at', today())->get();

@@ -52,7 +52,7 @@
                     @forelse ($todaysAppointmentsList as $appointment)
                         <tr class="border-b hover:bg-gray-100 cursor-pointer" onclick="window.location='{{ url('/pets/' . $appointment->pet->id . '?tab=upcoming') }}';">
                             <td class="p-4">{{ $appointment->pet->name }}</td>
-                            <td class="p-4">{{ $appointment->pet->owner->full_name }}</td>
+                            <td class="p-4"><span class="uppercase">{{ $appointment->pet->owner->last_name }}</span>,{{ $appointment->pet->owner->first_name }}</td>
                             <td class="p-4">{{ $appointment->pet->owner->email }}</td>
                             <td class="p-4">{{ $appointment->pet->owner->phone_number }}</td>
                             <td class="p-4">{{ $appointment->title }}</td>
