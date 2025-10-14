@@ -23,7 +23,7 @@
                     <option value="">Select an Owner</option>
                     @foreach ($owners as $owner)
                         <option value="{{ $owner->id }}" {{ old('owner_id', $pet->owner_id) == $owner->id ? 'selected' : '' }}>
-                            {{ $owner->name }}
+                            {{ $owner->full_name }}
                         </option>
                     @endforeach
                 </select>

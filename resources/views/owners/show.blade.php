@@ -38,7 +38,7 @@
         <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">Registered Pets</h3>
-                <a href="{{ url('/pets/create?owner_id=' . $owner->id) }}" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center">
+                <a href="{{ route('pets.create', ['owner_id' => $owner->id]) }}"class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center">
                     <i class="fas fa-plus mr-2"></i> Register New Pet
                 </a>
             </div>

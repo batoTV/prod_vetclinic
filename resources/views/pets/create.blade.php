@@ -16,17 +16,32 @@
             </div>
 
             <!-- Owner -->
-            <div>
-                <label for="owner_id" class="block text-sm font-medium text-gray-700">Owner</label>
-                <select name="owner_id" id="owner_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Select an Owner</option>
-                    @foreach ($owners as $owner)
-                       <option value="{{ $owner->id }}" {{ (isset($selectedOwnerId) && $selectedOwnerId == $owner->id) ? 'selected' : '' }}>
-                            {{ $owner->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+<div>
+    <label for="owner_id" class="block text-sm font-medium text-gray-700">Owner</label>
+
+    {{-- This variable name MUST match the key from the controller --}}
+    @if ($owner) 
+        
+        {{-- If an owner is pre-selected, show this disabled input --}}
+        <input type="text" disabled value="{{ $owner->last_name }}, {{ $owner->first_name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100">
+        <input type="hidden" name="owner_id" value="{{ $owner->id }}">
+
+    @else
+
+        {{-- Otherwise, show the full dropdown --}}
+        <select name="owner_id" id="owner_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="">Select an Owner</option>
+            @foreach ($allOwners as $o)
+                <option value="{{ $o->id }}">{{ $o->last_name }}, {{ $o->first_name }}</option>
+            @endforeach
+        </select>
+
+    @endif
+</div>
+        
+                
+                
+                 
 
             <!-- Species -->
          <div>

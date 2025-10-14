@@ -7,6 +7,7 @@ use App\Models\Owner;
 use Illuminate\Http\Request; 
 use Carbon\Carbon;
 
+
 class PetController extends Controller
 {
     /**
@@ -57,18 +58,23 @@ class PetController extends Controller
  /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
-    {
-        $owners = Owner::all();
-        
-        // Get the specific owner ID from the URL, if it exists
-        $selectedOwnerId = $request->input('owner_id');
+public function create(Request $request)
+{
+    // Fetch all owners for the dropdown
+    $allOwners = Owner::orderBy('last_name')->get();
 
-        return view('pets.create', [
-            'owners' => $owners,
-            'selectedOwnerId' => $selectedOwnerId
-        ]);
+    // Find the specific owner from the URL
+    $specificOwner = null;
+    if ($request->has('owner_id')) {
+        $specificOwner = Owner::find($request->input('owner_id'));
     }
+
+    // **CRITICAL PART**: Make sure you are passing the variable with the key 'owner'
+    return view('pets.create', [
+        'allOwners' => $allOwners,
+        'owner' => $specificOwner // This key MUST be 'owner'
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.
