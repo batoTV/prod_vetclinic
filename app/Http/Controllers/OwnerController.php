@@ -73,6 +73,7 @@ class OwnerController extends Controller
             'first_name' => 'required|string|max:255',
         'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:owners,email,' . $owner->id,
+            'phone_number' => 'required|digits:11|unique:owners,phone_number,' . $owner->id,
             'address' => 'required|string',
         ]);
 
