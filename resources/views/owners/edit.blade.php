@@ -24,7 +24,7 @@
             <!-- Phone Number -->
             <div>
                 <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input type="text" name="phone_number" id="phone_number" required value="{{ $owner->phone_number }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" name="phone_number" id="phone_number" required maxlength="11" pattern="[0-9]{11}" inputmode="numeric" title="Phone number must be 11 digits." value="{{ $owner->phone_number }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
             <!-- Email Address -->
