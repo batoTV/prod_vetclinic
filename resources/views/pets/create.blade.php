@@ -26,16 +26,66 @@
         <input type="text" disabled value="{{ $owner->last_name }}, {{ $owner->first_name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100">
         <input type="hidden" name="owner_id" value="{{ $owner->id }}">
 
-    @else
+   @else
+        {{-- NEW SEARCHABLE DROPDOWN --}}
+        <div x-data="{
+            open: false,
+            search: '',
+            allOwners: @js($allOwners->map(fn($o) => ['id' => $o->id, 'full_name' => $o->full_name])),
+            selectedOwnerId: null,
 
-        {{-- Otherwise, show the full dropdown --}}
-        <select name="owner_id" id="owner_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="">Select an Owner</option>
-            @foreach ($allOwners as $o)
-                <option value="{{ $o->id }}">{{ $o->last_name }}, {{ $o->first_name }}</option>
-            @endforeach
-        </select>
-
+            get filteredOwners() {
+                if (this.search === '') {
+                    // Show all owners if search is empty
+                    return this.allOwners;
+                }
+                // Filter owners based on search text
+                return this.allOwners.filter(owner => 
+                    owner.full_name.toLowerCase().includes(this.search.toLowerCase())
+                );
+            },
+            
+            selectOwner(owner) {
+                this.selectedOwnerId = owner.id; // Set the hidden input value
+                this.search = owner.full_name;   // Set the visible input text
+                this.open = false;               // Close the dropdown
+            }
+        }" class="relative">
+    
+            {{-- This hidden input stores and submits the selected owner ID --}}
+            <input type="hidden" name="owner_id" x-model="selectedOwnerId">
+    
+            {{-- This is the visible text input for searching --}}
+            <input type="text"
+                   x-model="search"
+                   @input.debounce.300ms="open = true"
+                   @focus="open = true"
+                   @click.away="open = false"
+                   @keydown.escape.prevent="open = false; search = '';"
+                   placeholder="Type to search for an owner..."
+                   required
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+    
+            {{-- This is the dropdown list of results --}}
+            <div x-show="open"
+                 x-transition
+                 class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-y-auto border border-gray-200">
+                <ul class="py-1">
+                    <template x-for="owner in filteredOwners" :key="owner.id">
+                        <li @click="selectOwner(owner)"
+                            class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-50">
+                            <span x-text="owner.full_name"></span>
+                        </li>
+                    </template>
+                    
+                    {{-- Show a message if no results are found --}}
+                    <li x-show="filteredOwners.length === 0 && search.length > 0" 
+                        class="px-4 py-2 text-sm text-gray-500 italic">
+                        No owners found matching "<span x-text="search"></span>"
+                    </li>
+                </ul>
+            </div>
+        </div>
     @endif
 </div>
         

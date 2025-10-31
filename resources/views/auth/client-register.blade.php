@@ -209,7 +209,7 @@
                 <div x-show="clientStatus === 'existing'" x-transition>
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Find Your Record</h2>
                     <div>
-                        <label for="find_name" class="block font-medium text-sm text-gray-700">Full Name</label>
+                        <label for="find_name" class="block font-medium text-sm text-gray-700">Last Name</label>
                         <input id="find_name" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName">
                     </div>
                     <div class="mt-4"><label for="find_phone" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="find_phone" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="tel" x-model.debounce.300ms="findPhone"></div>
@@ -308,7 +308,7 @@
                     <div x-show="!foundOwner">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Find Owner Record</h2>
                         <div>
-                            <label for="find_name_consent" class="block font-medium text-sm text-gray-700">Full Name</label>
+                            <label for="find_name_consent" class="block font-medium text-sm text-gray-700">Last Name</label>
                             <input id="find_name_consent" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="text" x-model.debounce.300ms="findName">
                         </div>
                         <div class="mt-4"><label for="find_phone_consent" class="block font-medium text-sm text-gray-700">Phone Number</label><input id="find_phone_consent" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" type="tel" x-model.debounce.300ms="findPhone"></div>
