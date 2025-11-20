@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "^3.29",
         "masbug/flysystem-google-drive-ext": "*",
+        "owen-it/laravel-auditing": "^14.0",
         "spatie/flysystem-dropbox": "*",
         "spatie/laravel-backup": "^9.3"
     },

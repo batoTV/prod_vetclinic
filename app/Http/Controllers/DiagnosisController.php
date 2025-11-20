@@ -29,7 +29,8 @@ class DiagnosisController extends Controller
      */
     public function show(Diagnosis $diagnosis)
     {
-        $diagnosis->load('appointments'); 
+        $diagnosis->load(['appointments', 'audits.user']);
+        
         return view('diagnoses.show', ['diagnosis' => $diagnosis]);
     }
 

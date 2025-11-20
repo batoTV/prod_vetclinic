@@ -105,4 +105,65 @@
         </div>
     @endif
 </div>
+<div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold mb-4 border-b pb-2">Record History</h3>
+    
+    <div class="max-h-96 overflow-y-auto">
+        <ul role="list" class="-mb-8">
+            @forelse ($diagnosis->audits->sortByDesc('created_at') as $audit)
+                <li>
+                    <div class="relative pb-8">
+                        @if (!$loop->last)
+                            <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                        @endif
+                        <div class="relative flex space-x-3">
+                            <div>
+                                <span class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                                    @if ($audit->event == 'created')
+                                        <i class="fas fa-plus text-green-600"></i>
+                                    @elseif ($audit->event == 'updated')
+                                        <i class="fas fa-pen text-blue-600"></i>
+                                    @elseif ($audit->event == 'deleted')
+                                        <i class="fas fa-trash text-red-600"></i>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="min-w-0 flex-1 pt-1.5">
+                                <div>
+                                    <p class="text-sm text-gray-500">
+                                        <span class="font-medium text-gray-900">
+                                            {{ $audit->user->name ?? 'System' }}
+                                        </span>
+                                        {{ $audit->event }} this record
+                                        <span class="whitespace-nowrap">{{ $audit->created_at->diffForHumans() }}</span>
+                                    </p>
+                                </div>
+                                
+                                {{-- Show specific changes if it was an update --}}
+                                @if ($audit->event == 'updated')
+                                    <div class="mt-2 text-sm text-gray-700 bg-gray-50 p-2 rounded border">
+                                        <ul class="list-disc list-inside">
+                                            @foreach ($audit->getModified() as $attribute => $modified)
+                                                <li>
+                                                    <strong>{{ ucfirst(str_replace('_', ' ', $attribute)) }}:</strong> 
+                                                    from <span class="text-red-500 line-through">{{ $modified['old'] ?? 'blank' }}</span> 
+                                                    to <span class="text-green-600 font-semibold">{{ $modified['new'] }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            @empty
+                <li>
+                    <p class="text-gray-500 italic">No history recorded for this item.</p>
+                </li>
+            @endforelse
+        </ul>
+    </div>
+</div>
+
 @endsection
