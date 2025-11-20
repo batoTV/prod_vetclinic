@@ -32,7 +32,7 @@
             open: false,
             search: '',
             allOwners: @js($allOwners->map(fn($o) => ['id' => $o->id, 'full_name' => $o->full_name])),
-            selectedOwnerId: null,
+            selectedOwnerId: {{ $selectedOwnerId ?? 'null' }},
 
             get filteredOwners() {
                 if (this.search === '') {
@@ -132,15 +132,23 @@
             </div>
             <!-- Allergies -->
             <div class="md:col-span-2">
-                <label for="allergies" class="block text-sm font-medium text-gray-700">Allergies</label>
+                <label for="allergies" class="block text-sm font-medium text-gray-700">Health Notes / Allergies</label>
                 <textarea name="allergies" id="allergies" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{-- For edit form, add: old('allergies', $pet->allergies) --}}</textarea>
             </div>
         </div>
 
         <div class="mt-8 flex justify-end">
-            <a href="{{ url()->previous() }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300 transition-colors duration-300 flex items-center">
-                <i class="fas fa-times mr-2"></i>Cancel
-            </a>
+            @if(isset($owner) && $owner)
+                {{-- Case 1: We know the owner, go back to their profile --}}
+                <a href="{{ route('owners.show', $owner->id) }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300 transition-colors duration-300 flex items-center">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </a>
+            @else
+                {{-- Case 2: No specific owner, go back to the general Pets list --}}
+                <a href="{{ route('pets.index') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300 transition-colors duration-300 flex items-center">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </a>
+            @endif
             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition-colors duration-300 flex items-center">
                 <i class="fas fa-check mr-2"></i>Save Pet
             </button>

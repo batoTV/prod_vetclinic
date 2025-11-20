@@ -94,7 +94,8 @@ public function create(Request $request)
 
         Pet::create($validatedData);
 
-        return redirect()->route('pets.index')->with('success', 'Pet added successfully.');
+       return redirect()->route('pets.create', ['owner_id' => $request->owner_id])
+                     ->with('success', 'Pet added successfully. You can add another one below.');
     }
 
      /**
