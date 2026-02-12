@@ -89,6 +89,7 @@ $todaysAppointmentsList = $query->paginate(15);
                   });
         })->get()
     );
+    
 })
     ->sortBy('last_name');     // Sort them alphabetically
 

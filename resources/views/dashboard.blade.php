@@ -166,7 +166,7 @@
             @empty
                 <li class="py-6 text-center text-gray-500">
                     <i class="fas fa-info-circle mb-2 block"></i>
-                    No activity recorded today.
+                    No activity recorded today
                 </li>
             @endforelse
         </ul>
