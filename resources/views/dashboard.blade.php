@@ -126,26 +126,47 @@
             </div>
         </div> -->
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4">Today's Visiting Clients</h2>
-             {{-- This wrapper makes the list scrollable --}}
+ <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-bold mb-4">Today's Active Clients</h2>
+    
     <div class="max-h-[600px] overflow-y-auto border rounded-lg p-2">
         <ul role="list" class="divide-y divide-gray-200">
             @forelse ($uniqueActiveOwners as $owner)
-                <li class="py-3 px-2">
-                    <a href="{{ route('owners.show', $owner) }}" class="flex items-center space-x-3 group">
-                        <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-gray-500"></i>
+                <li class="py-4 px-2 hover:bg-gray-50 transition-colors rounded-md">
+                    <div class="flex items-start space-x-3">
+                        
+                        <div class="h-10 w-10 flex-shrink-0 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-indigo-600"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-900 group-hover:text-indigo-600">
-                            {{-- This will now display in "Last Name, First Name" format --}}
-                            <span class="uppercase">{{ $owner->last_name }}</span>, {{ $owner->first_name }}
-                        </span>
-                    </a>
+
+                        <div class="flex-1 min-w-0">
+                            <a href="{{ route('owners.show', $owner) }}" class="text-sm font-bold text-gray-900 hover:text-indigo-600 block truncate">
+                                <span class="uppercase">{{ $owner->last_name }}</span>, {{ $owner->first_name }}
+                            </a>
+                            
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                @foreach($owner->pets as $pet)
+                                    <a href="{{ route('pets.show', $pet) }}" 
+                                    class="inline-flex items-center px-3 py-1 rounded text-xs font-medium border transition-all 
+                                    {{ $pet->created_at->isToday() ? 'bg-green-50 text-green-700 border-green-100 hover:bg-green-100' : 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' }}">
+                                        
+                                        <i class="fas fa-paw mr-2 text-[10px]"></i>
+                                        
+                                        <span>{{ $pet->name }}</span>
+                                        
+                                        @if(!$pet->created_at->isToday())
+                                            <span class="ml-2 text-[8px] opacity-50 text-blue-500">•</span>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </li>
             @empty
-                <li class="py-3 text-center text-gray-500">
-                    No clients have visited yet today.
+                <li class="py-6 text-center text-gray-500">
+                    <i class="fas fa-info-circle mb-2 block"></i>
+                    No activity recorded today.
                 </li>
             @endforelse
         </ul>

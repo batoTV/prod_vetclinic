@@ -79,6 +79,17 @@ $todaysAppointmentsList = $query->paginate(15);
     })
     ->filter()           // Remove any nulls from the owner list
     ->unique('id')       // Get only unique owners based on their ID
+    ->each(function($owner) {
+    // Load pets that were EITHER created today OR had a diagnosis today
+    $owner->setRelation('pets', $owner->pets()
+        ->where(function($query) {
+            $query->whereDate('created_at', today())
+                  ->orWhereHas('diagnoses', function($q) {
+                      $q->whereDate('created_at', today());
+                  });
+        })->get()
+    );
+})
     ->sortBy('last_name');     // Sort them alphabetically
 
     return view('dashboard', [
