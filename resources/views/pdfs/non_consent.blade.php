@@ -24,7 +24,9 @@
 
     <table class="details-table">
         <tr>
-            <td><strong>Owner's Name:</strong> {{ $ownerName }}</td>
+            <td>
+    <strong>Owner's Name:</strong> {{ $firstName }} {{ $lastName }}
+</td>
             <td><strong>Pet's Name:</strong> {{ $petName }}</td>
         </tr>
     </table>
