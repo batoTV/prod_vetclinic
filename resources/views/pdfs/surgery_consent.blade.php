@@ -31,7 +31,7 @@
     <table class="details">
         <tr>
             <td>
-    <strong>Owner's Name:</strong> {{ $firstName }} {{ $lastName }}
+    <strong>Owner's Name:</strong> {{ $first_Name }} {{ $last_Name }}
 </td>
             <td><strong>Pet's Name:</strong> {{ $petName }}</td>
         </tr>
