@@ -34,7 +34,8 @@ public function store(Request $request)
         $pdfTemplate = 'pdfs.' . $validated['consent_type'] . '_consent';
 
         $dataForPdf = [
-            'ownerName' => $pet->owner->name,
+            'firstName' => $pet->owner->first_name, 
+            'lastName'  => $pet->owner->last_name,
             'petName'   => $pet->name,
             'date'      => now()->format('M d, Y'),
             'signature' => $validated['signature'],
