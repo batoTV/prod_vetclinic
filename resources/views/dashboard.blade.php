@@ -132,7 +132,8 @@
     <div class="max-h-[600px] overflow-y-auto border rounded-lg p-2">
         <ul role="list" class="divide-y divide-gray-200">
             @forelse ($uniqueActiveOwners as $owner)
-                <li class="py-4 px-2 hover:bg-gray-50 transition-colors rounded-md">
+                
+<li id="owner-{{ $owner->id }}" class="py-4 px-2 hover:bg-gray-50 transition-colors rounded-md scroll-mt-4">
                     <div class="flex items-start space-x-3">
                         
                         <div class="h-10 w-10 flex-shrink-0 bg-indigo-100 rounded-full flex items-center justify-center">
@@ -173,3 +174,20 @@
     </div>
 </div>
      @endsection
+
+@push('scripts')
+     <script>
+    window.addEventListener('pageshow', function(event) {
+        // 'pageshow' triggers even when using the browser back button (bfcache)
+        if (window.location.hash) {
+            const element = document.querySelector(window.location.hash);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('bg-yellow-50'); // Temporary highlight
+                    setTimeout(() => element.classList.remove('bg-yellow-50'), 2000);
+                }, 100);
+            }
+        }
+    });
+</script>

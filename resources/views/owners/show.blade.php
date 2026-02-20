@@ -51,7 +51,7 @@
                                 <th class="p-4 font-semibold">Pet Name</th>
                                 <th class="p-4 font-semibold">Species</th>
                                 <th class="p-4 font-semibold">Breed</th>
-                                <th class="p-4 font-semibold text-center">Actions</th>
+                                <th class="p-4 font-semibold text-center">Actions<  /th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,3 +76,13 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    // When the profile page loads, tell the browser's history 
+    // that the 'return point' is the specific ID on the dashboard.
+    window.addEventListener('load', function() {
+        const returnUrl = "{{ url('/dashboard') }}#owner-{{ $owner->id ?? $pet->owner_id }}";
+        window.history.replaceState(null, null, returnUrl);
+    });
+</script>

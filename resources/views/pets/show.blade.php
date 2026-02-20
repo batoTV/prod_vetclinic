@@ -15,6 +15,9 @@
         {{-- Action Buttons --}}
         <div class="flex items-center">
             {{-- BEST PRACTICE: Use named routes instead of url() --}}
+            <a href="{{ route('pets.edit', $pet->id) }}" class="bg-blue-600 text-white h-12 w-12 rounded-full shadow-lg hover:bg-blue-700 flex items-center justify-center transition-transform transform hover:scale-110 mr-4">
+                <i class="fas fa-edit fa-lg"></i>
+            </a>
             <a href="{{ route('diagnoses.create', ['pet' => $pet->id]) }}" class="bg-green-600 text-white h-12 w-12 rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transition-transform transform hover:scale-110" title="Add Medical Record">
                 <i class="fas fa-notes-medical fa-lg"></i>
             </a>
@@ -217,5 +220,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
+
+    
+</script>
+<script>
+    // When the profile page loads, tell the browser's history 
+    // that the 'return point' is the specific ID on the dashboard.
+    window.addEventListener('load', function() {
+        const returnUrl = "{{ url('/dashboard') }}#owner-{{ $owner->id ?? $pet->owner_id }}";
+        window.history.replaceState(null, null, returnUrl);
+    });
 </script>
 @endpush
