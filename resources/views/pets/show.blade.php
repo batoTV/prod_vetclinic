@@ -65,8 +65,14 @@
         {{-- Right Column: Owner --}}
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h3 class="text-xl font-bold mb-4 border-b pb-2">Owner Information</h3>
+            
             <div class="space-y-3 text-gray-700">
-                <div><p class="font-semibold">Name:</p><p>{{ $pet->owner->full_name }}</p></div>
+                <div><p class="font-semibold">Name:</p><a href="{{ route('owners.show', $pet->owner_id) }}" 
+       class="text-blue-600 hover:text-blue-800 font-medium flex items-center group transition-colors" 
+       title="View Owner Profile">
+        {{ $pet->owner->full_name }}
+        <i class="fas fa-external-link-alt ml-2 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+    </a></div>
                 <div><p class="font-semibold">Email:</p><p>{{ $pet->owner->email }}</p></div>
                 <div><p class="font-semibold">Phone:</p><p>{{ $pet->owner->phone_number }}</p></div>
             </div>

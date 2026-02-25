@@ -41,9 +41,9 @@
         </div>
 
         <div class="mt-8 flex justify-end">
-            <a href="{{ url('/owners') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300 transition-colors duration-300 flex items-center">
-                <i class="fas fa-times mr-2"></i>Cancel
-            </a>
+            <a href="{{ route('owners.show', $owner->id) }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">
+        Cancel
+    </a>
             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition-colors duration-300 flex items-center">
                 <i class="fas fa-check mr-2"></i>Update Owner
             </button>

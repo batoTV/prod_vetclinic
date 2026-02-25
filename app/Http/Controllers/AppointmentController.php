@@ -69,13 +69,10 @@ class AppointmentController extends Controller
         $pets = Pet::with('owner')->get();
         
         // Get the specific pet ID from the URL, if it exists
-        $selectedPetId = $request->input('pet');
+        $selectedPetId = $request->query('pet');
 
-        return view('appointments.create', [
-            'pets' => $pets,
-            'selectedPetId' => $selectedPetId
-        ]);
-    }
+    return view('appointments.create', compact('pets', 'selectedPetId'));
+}
     public function edit(Appointment $appointment)
     {
         // We need the list of all pets for the dropdown, just like in create()

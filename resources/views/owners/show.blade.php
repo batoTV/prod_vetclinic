@@ -4,12 +4,25 @@
 
 @section('content')
     {{-- Main Header --}}
-     <div class="flex items-center mb-8">
-        <div class="bg-gray-200 text-gray-700 rounded-full h-24 w-24 flex items-center justify-center">
-            <span class="text-4xl font-bold">{{ substr($owner->name, 0, 1) }}</span>
+     {{-- Main Header with Action Buttons --}}
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <div class="bg-gray-200 text-gray-700 rounded-full h-24 w-24 flex items-center justify-center">
+                <span class="text-4xl font-bold">{{ substr($owner->full_name, 0, 1) }}</span>
+            </div>
+            <div class="ml-6">
+                <h2 class="text-4xl font-bold">{{ $owner->full_name }}</h2>
+                <p class="text-gray-500">Client Profile</p>
+            </div>
         </div>
-        <div class="ml-6">
-            <h2 class="text-4xl font-bold">{{ $owner->full_name }}</h2>
+
+        {{-- Action Buttons --}}
+        <div class="flex items-center">
+            <a href="{{ route('owners.edit', $owner->id) }}" 
+               class="bg-blue-600 text-white h-12 w-12 rounded-full shadow-lg hover:bg-blue-700 flex items-center justify-center transition-transform transform hover:scale-110" 
+               title="Edit Owner Details">
+                <i class="fas fa-edit fa-lg"></i>
+            </a>
         </div>
     </div>
 
@@ -51,7 +64,7 @@
                                 <th class="p-4 font-semibold">Pet Name</th>
                                 <th class="p-4 font-semibold">Species</th>
                                 <th class="p-4 font-semibold">Breed</th>
-                                <th class="p-4 font-semibold text-center">Actions<  /th>
+                                <th class="p-4 font-semibold text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>

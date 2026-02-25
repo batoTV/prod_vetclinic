@@ -11,16 +11,30 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Pet -->
                 <div>
-                    <label for="pet_id" class="block text-sm font-medium text-gray-700">Pet</label>
-                    <select name="pet_id" id="pet_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">Select a Pet</option>
-                        @foreach ($pets as $pet)
-                            <option value="{{ $pet->id }}" {{ (isset($selectedPetId) && $selectedPetId == $pet->id) ? 'selected' : '' }}>
-                                {{ $pet->name }} ({{ $pet->owner->name }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+    <label for="pet_id" class="block text-sm font-medium text-gray-700">Pet</label>
+    
+    {{-- If a pet is pre-selected, disable the dropdown and use a hidden input for submission --}}
+    @if(isset($selectedPetId))
+        <input type="hidden" name="pet_id" value="{{ $selectedPetId }}">
+        <select id="pet_id" disabled class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm">
+            @foreach ($pets as $pet)
+                @if($pet->id == $selectedPetId)
+                    <option selected>{{ $pet->name }} ({{ $pet->owner->full_name }})</option>
+                @endif
+            @endforeach
+        </select>
+    @else
+        {{-- Standard dropdown if no pet is selected yet --}}
+        <select name="pet_id" id="pet_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="">Select a Pet</option>
+            @foreach ($pets as $pet)
+                <option value="{{ $pet->id }}">
+                    {{ $pet->name }} ({{ $pet->owner->full_name }})
+                </option>
+            @endforeach
+        </select>
+    @endif
+</div>
 
                 <!-- Title -->
                 <div>
@@ -43,9 +57,21 @@
             </div>
 
             <div class="mt-8 flex justify-end">
-                <a href="{{ url()->previous() }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">Cancel</a>
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">Save Appointment</button>
-            </div>
+    {{-- Dynamic Cancel Link --}}
+    @if(isset($selectedPetId))
+        <a href="{{ route('pets.show', $selectedPetId) }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">
+            Cancel
+        </a>
+    @else
+        <a href="{{ url('/calendar') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">
+            Cancel
+        </a>
+    @endif
+    
+    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+        Save Appointment
+    </button>
+</div>
         </form>
     </div>
     @endsection

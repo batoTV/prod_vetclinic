@@ -13,17 +13,19 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label for="pet_id" class="block text-sm font-medium text-gray-700">Pet</label>
-                <select name="pet_id" id="pet_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Select a Pet</option>
-                    @foreach ($pets as $pet)
-                        {{-- 4. Modified logic to select the correct pet --}}
-                        <option value="{{ $pet->id }}" {{ old('pet_id', $appointment->pet_id) == $pet->id ? 'selected' : '' }}>
-                            {{ $pet->name }} ({{ $pet->owner->name }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+    <label for="pet_id" class="block text-sm font-medium text-gray-700">Pet</label>
+    
+    {{-- Hidden input ensures the pet_id is sent to the update method --}}
+    <input type="hidden" name="pet_id" value="{{ $appointment->pet_id }}">
+    
+    <select id="pet_id" disabled class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm">
+        @foreach ($pets as $pet)
+            <option value="{{ $pet->id }}" {{ $appointment->pet_id == $pet->id ? 'selected' : '' }}>
+                {{ $pet->name }} ({{ $pet->owner->full_name }})
+            </option>
+        @endforeach
+    </select>
+</div>
 
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700">Appointment Title</label>
@@ -44,8 +46,11 @@
             </div>
         </div>
 
-        <div class="mt-8 flex justify-end">
-            <a href="{{ url()->previous() }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">Cancel</a>
+             <div class="mt-8 flex justify-end">
+   <a href="{{ route('pets.show', $appointment->pet_id) }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-4 hover:bg-gray-300">
+    Cancel
+</a>
+    
             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">Update Appointment</button> {{-- 5. Changed Button Text --}}
         </div>
     </form>

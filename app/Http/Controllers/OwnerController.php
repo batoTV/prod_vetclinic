@@ -79,7 +79,8 @@ class OwnerController extends Controller
 
         $owner->update($validatedData);
 
-        return redirect('/owners')->with('success', 'Owner has been updated successfully.');
+        return redirect()->route('owners.show', $owner->id)
+                     ->with('success', 'Owner updated successfully!');
     }
 
     /**

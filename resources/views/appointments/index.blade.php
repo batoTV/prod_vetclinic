@@ -27,6 +27,9 @@
             },
             events: '{{ url("/api/appointments") }}',
              displayEventTime: false,
+             datesSet: function(dateInfo) {
+            localStorage.setItem('calendar_last_date', dateInfo.startStr);
+        },
             // THIS IS THE NEW FUNCTION
             eventClick: function(info) {
                 info.jsEvent.preventDefault(); // Don't let the browser navigate
