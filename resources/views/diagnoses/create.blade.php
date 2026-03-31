@@ -108,7 +108,7 @@
 
             <!-- Diagnosis -->
             <div class="md:col-span-2">
-                <label for="diagnosis" class="block text-sm font-medium text-gray-700">Diagnosis</label>
+                <label for="diagnosis" class="block text-sm font-medium text-gray-700">Tentative Diagnosis</label>
                 <textarea name="diagnosis" id="diagnosis" rows="4"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('diagnosis') }}</textarea>
                 @error('diagnosis')
                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
@@ -116,7 +116,7 @@
             </div>
             <!-- Final Diagnosis -->
              <div class="mt-4">
-    <label class="block text-sm font-medium text-gray-700">Final Diagnosis</label>
+    <label class="block text-sm font-medium text-gray-700">Diagnosis</label>
     <input type="text" name="final_diagnosis" value="{{ old('final_diagnosis') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
 </div>
 
