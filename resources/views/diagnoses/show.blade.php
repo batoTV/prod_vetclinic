@@ -28,13 +28,21 @@
                 <p class="font-semibold text-gray-600">Chief Complaints:</p>
                 <p class="mt-1">{{ $diagnosis->chief_complaints }}</p>
             </div>
-            <!-- <div class="p-4 bg-gray-50 rounded-lg">
-                <p class="font-semibold text-gray-600">Assessment:</p>
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-600">Physical Examination Findings:</p>
                 <p class="mt-1">{{ $diagnosis->assessment ?: 'N/A' }}</p>
-            </div> -->
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-600">Laboratory Findings:</p>
+                <p class="mt-1">{{ $diagnosis->laboratory_results ?: 'N/A' }}</p>
+            </div>
             <div class="p-4 bg-gray-50 rounded-lg">
                 <p class="font-semibold text-gray-600">Diagnosis:</p>
                 <p class="mt-1">{{ $diagnosis->diagnosis }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-600">Final Diagnosis:</p>
+                <p class="mt-1">{{ $diagnosis->final_diagnosis }}</p>
             </div>
             <div class="p-4 bg-gray-50 rounded-lg">
                 <p class="font-semibold text-gray-600">Plan / Treatment:</p>

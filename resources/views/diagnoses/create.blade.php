@@ -75,10 +75,36 @@
         </div>
 
         <!-- Assessment -->
-        <!-- <div class="md:col-span-2">
-            <label for="assessment" class="block text-sm font-medium text-gray-700">Assessment</label>
-            <textarea name="assessment" id="assessment" rows="3" class="mt-1 block w-full ..."></textarea>
-        </div> -->
+        <div class="md:col-span-2">
+            <label for="assessment" class="block text-sm font-medium text-gray-700">
+                Physical Examination Findings
+            </label>
+            <textarea 
+                name="assessment" 
+                id="assessment" 
+                rows="6" 
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            >{{ old('assessment') }}</textarea>
+            @error('assessment')
+                    <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                @enderror
+        </div>
+
+        <!-- Laboratory -->
+        <div class="md:col-span-2">
+            <label for="laboratory_results" class="block text-sm font-medium text-gray-700">
+               Laboratory Findings
+            </label>
+            <textarea 
+                name="laboratory_results" 
+                id="laboratory_results" 
+                rows="6" 
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            >{{ old('laboratory_results') }}</textarea>
+            @error('laboratory_results')
+                    <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                @enderror
+        </div>
 
             <!-- Diagnosis -->
             <div class="md:col-span-2">
@@ -88,6 +114,11 @@
                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                 @enderror
             </div>
+            <!-- Final Diagnosis -->
+             <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-700">Final Diagnosis</label>
+    <input type="text" name="final_diagnosis" value="{{ old('final_diagnosis') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+</div>
 
             <!-- Plan -->
             <div class="md:col-span-2">

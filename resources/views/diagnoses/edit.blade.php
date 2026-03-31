@@ -72,15 +72,25 @@
             <textarea name="chief_complaints" id="chief_complaints" rows="3"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->chief_complaints}}</textarea>
         </div>
 
-        <!-- Assessment
+        <!-- Assessment -->
         <div class="md:col-span-2">
-            <label for="assessment" class="block text-sm font-medium text-gray-700">Assessment</label>
+            <label for="assessment" class="block text-sm font-medium text-gray-700">Physical Examination Findings</label>
             <textarea name="assessment" id="assessment" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->assessment}}</textarea>
-        </div> -->
+        </div>
+        <div class="md:col-span-2">
+            <label for="laboratory_results" class="block text-sm font-medium text-gray-700">Laboratory Findings</label>
+            <textarea name="laboratory_results" id="laboratory_results" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->laboratory_results}}</textarea>
+        </div>
             <!-- Diagnosis -->
             <div class="md:col-span-2">
                 <label for="diagnosis" class="block text-sm font-medium text-gray-700">Diagnosis</label>
                 <textarea name="diagnosis" id="diagnosis" rows="4"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->diagnosis }}</textarea>
+            </div>
+            <!-- Fianl Diagnosis -->
+            <div class="md:col-span-2">
+                <label for="final_diagnosis" class="block text-sm font-medium text-gray-700">Final Diagnosis</label>
+                <!-- <textarea name="final_diagnosis" id="final_diagnosis" rows="4"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ $diagnosis->final_diagnosis }}</textarea> -->
+                <input type="text" name="final_diagnosis" value="{{ $diagnosis->final_diagnosis }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
             <!-- Plan -->

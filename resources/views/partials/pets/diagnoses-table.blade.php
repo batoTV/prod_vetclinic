@@ -12,7 +12,18 @@
             @forelse ($diagnoses as $diagnosis)
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-4">{{ $diagnosis->checkup_date->format('M d, Y') }}</td>
-                    <td class="p-4">{{ $diagnosis->diagnosis ?: 'Awaiting Diagnosis' }}</td>
+                    <td class="p-4">
+    @if(!empty($diagnosis->final_diagnosis))
+        <div class="flex items-center">
+            <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">Final</span>
+            <span class="font-bold text-indigo-700">{{ $diagnosis->final_diagnosis }}</span>
+        </div>
+    @elseif(!empty($diagnosis->diagnosis))
+        <span class="text-gray-700">{{ $diagnosis->diagnosis }}</span>
+    @else
+        <span class="text-gray-400 italic">Awaiting Diagnosis</span>
+    @endif
+</td>
                     <td class="p-4">{{ $diagnosis->chief_complaints ?: 'N/A' }}</td> {{-- 2. New Cell Added --}}
                     <td class="p-4 text-center">
                         <a href="{{ route('diagnoses.show', $diagnosis->id) }}" class="text-indigo-600 hover:text-indigo-800 mr-2" title="View Details">

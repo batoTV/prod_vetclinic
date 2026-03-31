@@ -62,6 +62,8 @@ class DiagnosisController extends Controller
         'diagnosis' => 'nullable|string',
         'assessment' => 'nullable|string',
         'plan' => 'nullable|string',
+        'laboratory_results' => 'nullable|string', // NEW
+        'final_diagnosis' => 'nullable|string',    // NEW
         'xray_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
         'appointments' => 'nullable|array', // Validate the main array
         'appointments.*.appointment_date' => 'nullable|date', // Changed from required_with
@@ -113,6 +115,8 @@ class DiagnosisController extends Controller
         // Made this 'required' to match the form's HTML
         'diagnosis' => 'nullable|string',
         'plan' => 'nullable|string',
+        'laboratory_results' => 'nullable|string', // NEW
+        'final_diagnosis' => 'nullable|string',    // NEW
         'appointments' => 'nullable|array',
         'appointments.*.appointment_date' => 'nullable|date', // Changed from required_with
         'appointments.*.title' => 'nullable|string|max:255',

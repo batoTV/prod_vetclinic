@@ -24,6 +24,8 @@ class Diagnosis extends Model implements Auditable
         'chief_complaints', // This was 'diagnosis'
         'diagnosis',
         'assessment',
+        'laboratory_results', // Added
+    'final_diagnosis',    // Added
         'plan',
     ];
 
